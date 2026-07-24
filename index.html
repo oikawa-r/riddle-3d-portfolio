@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riddle Order 非公式 3Dファンサイト | ポートフォリオ</title>
+    
+    <!-- ▼ 検索結果の下に表示される説明文（ディスクリプション） -->
+    <meta name="description" content="プロゲーミングチーム「Riddle Order」の非公式3Dインタラクティブファンサイトです。Three.jsとGSAPを使用し、選手データを3D空間で表現しています。">
+    
+    <!-- ▼ 検索キーワード（現在はGoogleはあまり重視しませんが念のため） -->
+    <meta name="keywords" content="Riddle, Riddle Order, ボドカ, 非公式, 3Dサイト, Three.js">
+
+    <!-- （以下、既存のGSAPなどの読み込み...） -->
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    
+    <!-- FontAwesome (SNSアイコン用) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- X (Twitter) の埋め込み用スクリプト -->
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    
+    <!-- Three.jsモジュール読み込み -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+        }
+      }
+    </script>
+    
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        canvas { position: fixed !important; top: 0; left: 0; z-index: -1; }
+        
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #111; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; transition: opacity 0.5s ease; }
+        #loading-text { font-size: 2rem; font-weight: 900; letter-spacing: 5px; margin-bottom: 20px; color: #ffe600; }
+        .progress-container { width: 300px; height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: #ffe600; transition: width 0.2s ease; }
+
+        #scroll-proxy { position: absolute; top: 0; left: 0; width: 100%; height: 500vh; z-index: 0; display: none; }
+        header { position: fixed; top: 0; left: 0; width: 100%; padding: 30px 0; z-index: 100; display: flex; justify-content: center; gap: 20px; pointer-events: none; }
+        .tab-button { pointer-events: auto; background: rgba(0, 0, 0, 0.7); color: #ffffff; border: 2px solid #ffe600; padding: 10px 25px; border-radius: 30px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; backdrop-filter: blur(5px); }
+        .tab-button:hover { background: #ffe600; color: #000000; box-shadow: 0 0 15px rgba(255, 230, 0, 0.8); transform: translateY(-2px); }
+        .ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; pointer-events: none; opacity: 0; box-sizing: border-box; padding: 80px 20px; }
+        
+        #hero { opacity: 1; pointer-events: auto; }
+        #description { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); text-align: center; transition: opacity 1s ease-in-out; width: 100%; }
+        #description h2 { font-size: 3rem; margin-bottom: 10px; letter-spacing: 4px; font-weight: 900; color: #ffffff; -webkit-text-stroke: 1px #000000; text-shadow: 3px 3px 0px #000000; }
+        #description p { font-size: 1.1rem; line-height: 1.8; letter-spacing: 2px; color: #ffffff; font-weight: bold; -webkit-text-stroke: 0.5px #000000; text-shadow: 2px 2px 0px #000000; }
+        
+        .cursor-trail { position: fixed; width: 20px; height: 20px; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: multiply; filter: blur(2px); }
+
+        .dept-bg { position: absolute; left: 2%; top: 50%; transform: translateY(-50%); width: 45vw; height: 80vh; background-size: contain; background-repeat: no-repeat; background-position: left center; opacity: 0; z-index: 0; pointer-events: none; transition: opacity 0.5s, background-image 0.5s ease-in-out; }
+        
+        #category-selection { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1100px; width: 100%; pointer-events: auto; position: relative; z-index: 999; }
+        .category-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; pointer-events: auto; }
+        .category-image { width: 220px; height: 124px; border-radius: 8px; border: 3px solid #000; outline: 2px solid #ffe600; outline-offset: -1px; background-size: cover; background-position: center; box-shadow: 6px 6px 0px rgba(0,0,0,0.8); transition: transform 0.3s ease, outline-offset 0.3s ease; pointer-events: none; }
+        .category-tab { background: #111; color: #fff; border: 2px solid #333; padding: 8px 24px; border-radius: 30px; font-weight: bold; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: 1px; pointer-events: none; }
+        .category-item:hover .category-image { transform: scale(1.05); outline-offset: 2px; }
+        .category-item:hover .category-tab { background: #ffe600; color: #000; border-color: #ffe600; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(255, 230, 0, 0.5); }
+
+        #member-details { display: none; flex-direction: column; align-items: center; width: 100%; z-index: 2; }
+        .back-btn { pointer-events: auto; background: #000; color: #fff; border: 2px solid #333; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: all 0.3s; letter-spacing: 1px; }
+        .back-btn:hover { background: #ffe600; color: #000; border-color: #ffe600; }
+
+        .member-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; pointer-events: auto; }
+        .m-tab { background: #111; color: #fff; border: 2px solid #333; padding: 8px 16px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; }
+        .m-tab.active, .m-tab:hover { background: #ffe600; color: #000; border-color: #ffe600; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 230, 0, 0.4); }
+        
+        .member-content-wrapper { position: relative; width: 100%; max-width: 1100px; height: 50vh; overflow-y: auto; overflow-x: hidden; padding: 10px; pointer-events: auto; }
+        .member-content-wrapper::-webkit-scrollbar { width: 8px; }
+        .member-content-wrapper::-webkit-scrollbar-thumb { background: #ffe600; border-radius: 4px; }
+        .member-content-wrapper::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+
+        .member-panel { display: none; gap: 30px; flex-wrap: wrap; justify-content: center; width: 100%; }
+        .member-panel.active-panel { display: flex; }
+        
+        .member-card { 
+            width: 220px; background: rgba(255,255,255,0.95); border: 2px solid #000; 
+            border-radius: 12px; padding: 20px; text-align: center; box-shadow: 6px 6px 0px #ffe600; 
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease; 
+            cursor: pointer; opacity: 0; position: relative; overflow: hidden; 
+        }
+        .member-card:hover { 
+            transform: scale(1.08) translateY(-8px) !important; 
+            box-shadow: 0 15px 30px rgba(255, 230, 0, 0.6), 0 0 15px rgba(255, 230, 0, 0.8) inset !important; 
+            border-color: #ffe600 !important; 
+            z-index: 10; 
+        }
+        .member-card::after { 
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+            background: linear-gradient(to bottom right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%); 
+            transform: rotate(45deg) translate(-100%, -100%); transition: transform 0.5s; pointer-events: none; 
+        }
+        .member-card:hover::after { transform: rotate(45deg) translate(100%, 100%); }
+        
+        .member-icon { 
+            width: 90px; height: 90px; background-color: #ffe600; color: #000; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 2.5rem; font-weight: 900; 
+            background-size: cover; background-position: center; border-radius: 50%; 
+            margin: 0 auto 15px auto; border: 2px solid #000; pointer-events: none; 
+            overflow: hidden;
+        }
+        
+        .member-name { margin: 0 0 5px 0; font-size: 1.3rem; font-weight: 900; pointer-events: none; }
+        .member-role { margin: 0; color: #666; font-weight: bold; font-size: 0.85rem; pointer-events: none; }
+
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; justify-content: center; align-items: center; opacity: 0; pointer-events: auto; }
+        .modal-content { background: #111; width: 90%; max-width: 700px; border: 2px solid #ffe600; border-radius: 15px; padding: 30px; box-shadow: 0 0 30px rgba(255, 230, 0, 0.3); color: #fff; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #ffe600; border-radius: 4px; }
+        
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; font-weight: bold; color: #666; cursor: pointer; transition: color 0.3s; z-index: 1000; }
+        .close-btn:hover { color: #ffe600; }
+        
+        .modal-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; padding-bottom: 0; border-bottom: none; }
+        
+        .modal-header-icon { 
+            width: 80px; height: 80px; background-color: #ffe600; color: #000; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 2.5rem; font-weight: 900; 
+            border-radius: 50%; border: 2px solid #ffe600; background-size: cover; background-position: center; flex-shrink: 0; 
+            overflow: hidden;
+        }
+        
+        .modal-header-info h2 { margin: 0 0 5px 0; font-size: 2rem; letter-spacing: 1px; word-break: break-word; }
+        .modal-header-info p { margin: 0; color: #999; font-weight: bold; font-size: 0.9rem; }
+        
+        .social-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .social-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #444; transition: all 0.2s; white-space: nowrap; }
+        .social-btn i { font-size: 1.1rem; }
+        .social-btn.yt:hover { background: #FF0000; border-color: #FF0000; }
+        .social-btn.tw:hover { background: #9146FF; border-color: #9146FF; }
+        .social-btn.x:hover { background: #000; border-color: #fff; }
+        .social-btn.shop:hover { background: #ffe600; color: #000; border-color: #ffe600; }
+
+        .modal-bio { line-height: 1.8; font-size: 0.95rem; color: #ddd; background: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 4px solid #ffe600; margin-bottom: 20px; }
+
+        #modal-video-wrapper { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .modal-video-item { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
+        .modal-video-item iframe { width: 100%; height: 100%; border: none; }
+        
+        .modal-tweet-item { width: 100%; display: flex; justify-content: center; background: #000; border-radius: 8px; border: 1px solid #333; padding: 10px; box-sizing: border-box; }
+        
+        .amu-stamp {
+            position: absolute;
+            top: 25px;
+            right: 80px; 
+            width: 70px;
+            height: 70px;
+            background-color: #fff;
+            border-radius: 50%;
+            border: 3px solid #ffe600;
+            box-shadow: 0 5px 15px rgba(255, 230, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            z-index: 1001;
+            pointer-events: none; 
+            opacity: 0;
+            transform: rotate(20deg) scale(0);
+        }
+        
+        /* ★追加: 葉選手のチャンネルリンク用ボタンスタイル */
+        .partner-links {
+            display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;
+        }
+        .partner-btn {
+            display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #ff4b4b; background: rgba(255, 75, 75, 0.1); transition: all 0.2s; white-space: nowrap;
+        }
+        .partner-btn i { font-size: 1.1rem; color: #ff4b4b; }
+        .partner-btn:hover { background: #ff4b4b; color: #fff; box-shadow: 0 0 10px rgba(255, 75, 75, 0.6); }
+
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div id="loading-text">LOADING...</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
+    <header>
+        <button class="tab-button" onclick="scrollToProgress(0)">Top</button>
+        <button class="tab-button" onclick="scrollToProgress(0.33)">Member</button>
+        <button class="tab-button" onclick="scrollToProgress(0.66)">History</button>
+        <button class="tab-button" onclick="scrollToProgress(1)">Notes</button>
+    </header>
+
+    <div id="scroll-proxy"></div>
+
+    <div id="hero" class="ui-layer">
+        <div id="description">
+            <h2>We are Riddle</h2>
+            <p>圧倒的な存在感と、予測不能なプレイ。<br>次世代を切り拓くオーダーがここに集う。</p>
+        </div>
+    </div>
+
+    <section id="members" class="ui-layer">
+        <h2 style="color: #000; font-size: 3rem; margin-bottom: 2rem; font-weight: 900; z-index: 2; pointer-events: none;">MEMBERS</h2>
+        <div id="department-bg" class="dept-bg"></div>
+        <div id="category-selection"></div>
+        <div id="member-details">
+            <button class="back-btn" onclick="showCategorySelection()">← CATEGORY</button>
+            <div class="member-tabs" id="dynamic-tabs"></div>
+            <div class="member-content-wrapper" id="dynamic-panels"></div>
+        </div>
+    </section>
+
+    <section id="history" class="ui-layer" style="color: white;">
+        <h2 style="color: #ffe600; font-size: 3.5rem; margin-bottom: 2rem; font-weight: 900; text-shadow: 2px 2px 0 #000;">HISTORY</h2>
+        <p style="background: rgba(0, 0, 0, 0.8); padding: 30px; border-radius: 10px; max-width: 600px; text-align: center; line-height: 2; font-weight: bold;">
+            Riddleは、数々の伝説を残してきたゲーミングチームです。<br>ここには今後、設立からの年表や軌跡を追加していく予定です。
+        </p>
+    </section>
+
+    <section id="notes" class="ui-layer" style="color: white;">
+        <h2 style="color: #cccccc; font-size: 2.5rem; margin-bottom: 2rem; font-weight: 900; text-shadow: 2px 2px 0 #000;">NOTES</h2>
+        <div style="background: rgba(0, 0, 0, 0.85); border: 1px solid #333; padding: 40px; border-radius: 10px; max-width: 700px; text-align: center; line-height: 2; font-weight: bold;">
+            <p style="margin: 0 0 15px 0;">※当サイトはRiddle Orderの非公式ファンサイトであり、公式のチーム・企業様とは一切関係ありません。</p>
+            <p style="margin: 0; font-size: 0.9rem; color: #999;">使用している名称・ロゴ等の権利は、それぞれの権利所有者に帰属します。</p>
+        </div>
+    </section>
+
+    <div id="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            
+            <div class="modal-header">
+                <div id="modal-icon-display" class="modal-header-icon"></div>
+                <div class="modal-header-info">
+                    <h2 id="modal-name-display">Name</h2>
+                    <p id="modal-role-display">Role</p>
+                </div>
+            </div>
+            
+            <div class="social-links" id="modal-socials">
+            </div>
+            
+            <div class="modal-bio" id="modal-bio-display">
+                ここに経歴や紹介文が入ります。
+            </div>
+            
+            <div id="modal-video-wrapper">
+            </div>
+            
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+
+        const DEPARTMENT_DATA = {
+            'tab-streamer': { title: 'STREAMER', count: 14, bgImage: 'images/Riddle.jpg', thumb: 'https://placehold.co/400x200/111/fff?text=STREAMER' },
+            'tab-creator':  { title: 'CONTENT CREATOR', count: 2, bgImage: 'images/Riddle.jpg', thumb: 'https://placehold.co/400x200/222/fff?text=CREATOR' },
+            'tab-apex':     { title: 'APEX', count: 7, bgImage: 'images/APEX.jpg', thumb: 'images/APEX.jpg' },
+            'tab-valo':     { title: 'VALORANT', count: 7, bgImage: 'images/valo.png', thumb: 'images/valo.png' },
+            'tab-sf':       { title: 'STREET FIGHTER', count: 5, bgImage: 'images/suto6.jpg', thumb: 'images/suto6.jpg' },
+            'tab-fortnite': { title: 'FORTNITE', count: 1, bgImage: 'images/fotona.png', thumb: 'images/fotona.png' },
+            'tab-shadow':   { title: 'Shadowverse', count: 5, bgImage: 'images/syadoba.jpg', thumb: 'images/syadoba.jpg' },
+            'tab-bf':       { title: 'BATTLEFIELD', count: 5, bgImage: 'images/bato6.jpeg', thumb: 'images/bato6.jpeg' }
+        };
+
+        const MEMBER_DETAILS = {
+            'tab-streamer': [
+                { name: "vdk(ボドカ)", role: "OWNER", icon: "愛", x: "https://x.com/VodkaChaso", yt: "https://www.youtube.com/@vodkachaso", twitch: "https://twitch.tv/vodkavdk", clips: ["https://www.youtube.com/embed/qwtQ2T7G098","https://www.youtube.com/watch?v=tdPyYYMjMMQ&t=2460s","https://youtu.be/8u3OjjOnMdA?si=4Z8aNUEM2ljfsjJ3","https://www.youtube.com/shorts/yBGv_BruEY0"], bio: "RIDDLE ORDERのオーナー。圧倒的なエイムと感情豊かなプレイで視聴者を魅了する。" },
+                { name: "しんじさん", role: "STREAMER", icon: "髭", x: "https://x.com/Shinjisan_XD", yt: "https://www.youtube.com/@shinji3XD", twitch: "https://www.twitch.tv/shinjifromjapanxd", clips: ["https://youtu.be/GuZdBoTBR_s?si=epGZBMqOmxNWKxs5","https://www.youtube.com/shorts/fN0gj8yQmmA","https://youtu.be/0wX6qvjZ-9E?si=YDk0gMB4yeEmjiDU"], bio: "ストリーマー部門所属。" },
+                { name: "ありけん", role: "STREAMER", icon: "太", x: "https://x.com/guraburuslot777", yt: "https://www.youtube.com/@arikenDB", twitch: "https://www.twitch.tv/arikendebu", clips: ["https://youtu.be/-Ouoararf6U?si=xHA8aahf_Ygif_ak","https://youtube.com/shorts/nYOtNBsAo08?si=68jsJL3xkmWT7NT9","https://youtu.be/FqUgILmcMCE?si=aqUescuinGgeoN7-"], bio: "ストリーマー部門所属。" },
+                // ★ 葉選手のデータに specialLinks を追加
+                { name: "葉", role: "STREAMER", icon: "細", x: "https://x.com/yohdayo", yt: "https://www.youtube.com/@yohtubedayo", twitch: "https://www.twitch.tv/yohdazo", clips: ["https://youtu.be/zsd4A1MrEec?si=02bMFVf08lauevN5","https://youtu.be/JqIPdUv6TQ8?si=AQxamv3W1RqSgzzy"], bio: "ストリーマー部門所属。", specialLinks: [ { title: "葉GONカップルチャンネル", url: "https://www.youtube.com/@yoh_gon" }, { title: "GONチャンネル", url: "https://www.youtube.com/@gon_vl" } ] },
+                { name: "YUKIO", role: "STREAMER", icon: "幼", x: "https://x.com/YukioFPS", yt: "https://www.youtube.com/@YUKIOMELTDOWN", twitch: "https://www.twitch.tv/yukiofps14", clips: ["https://youtube.com/shorts/iVCS0Rvm-gk?si=ThFpon2FwJ0BmD6_","https://youtu.be/lBJ9maHihp4?si=fnbU53gvbLEfTs3G","https://youtu.be/HGbfEsPvv6E?si=eOgaU9sLpCvhajUH"], bio: "ストリーマー部門所属。" },
+                { name: "Hesiko", role: "STREAMER", icon: "変", x: "https://x.com/hesikojonny", yt: "https://www.youtube.com/@%E3%81%B8%E3%81%97%E3%81%93%E3%83%AA%E3%83%89%E3%83%AB", twitch: "", clips: ["https://youtu.be/SA1DupCpAds?si=P1xg5HtdpSqJO2-6","https://youtu.be/FcFQwMT8Oug?si=LvJ0m7J-OnUiyN7X"], bio: "ストリーマー部門所属。" },
+                { name: "naohiro21", role: "STREAMER", icon: "脅", x: "https://x.com/naohiro21YT", yt: "https://www.youtube.com/@naohiro2121", twitch: "", clips: ["https://youtu.be/oc9yVryZllg?si=tOfw3fJZdR2GpQrp","https://youtu.be/c73gHnDzVa8?si=FEHDVJZL34D4p8dH","https://youtu.be/fOERJuX54xI?si=urrSa7x3tBG49ybi"], bio: "ストリーマー部門所属。" },
+                { name: "SqLA", role: "STREAMER", icon: "珍", x: "https://x.com/imsqla", yt: "https://www.youtube.com/@SqLA", twitch: "https://www.twitch.tv/sqla223/videos", clips: ["https://youtu.be/ed3SZ1mgOv0?si=V0PJhKEF9Ns8B-th"], bio: "ストリーマー部門所属。" },
+                { name: "aja", role: "STREAMER", icon: "飛", x: "https://x.com/ajak0n", yt: "https://www.youtube.com/@ajak0n", twitch: "https://www.twitch.tv/ajak0n", clips: ["https://youtu.be/6SLdkvEP-Hk?si=xFC6muSZ6eqx9iY7"], bio: "ストリーマー部門所属。" },
+                { name: "MARUTAKE", role: "STREAMER", icon: "短", x: "https://x.com/A_Marutake", yt: "https://www.youtube.com/@marutake7441", twitch: "https://www.twitch.tv/marutake_a", clips: ["https://youtube.com/shorts/TkmoYmRQbtU?si=wULlMi4jafovMMQk","https://youtu.be/ZwQOINbde28?si=Y4Y5pNw2fmI9fRrM"], bio: "ストリーマー部門所属。" },
+                { name: "らっしゃー", role: "STREAMER", icon: "顔", x: "https://x.com/rassya_taisyo", yt: "https://www.youtube.com/@rassyach", twitch: "https://www.twitch.tv/rassya12", clips: ["https://youtu.be/Wrrt0k3e_OA?si=S2xmbp7mMYRMLQLk","https://youtube.com/shorts/seV2WxZcHeQ?si=teB0zF2TplK5PTWE"], bio: "ストリーマー部門所属。" },
+                { name: "NiceWigg", role: "STREAMER", icon: "漢", x: "https://x.com/NiceWigg", yt: "https://www.youtube.com/@NiceWigg", twitch: "https://www.twitch.tv/nicewigg", clips: ["https://youtu.be/_wTI6T1kWRY?si=ytlHH0YOIxmUwrRx"], bio: "ストリーマー部門所属。" },
+                { name: "まろん", role: "STREAMER", icon: "才", x: "https://x.com/ridmaron", yt: "https://www.youtube.com/@Riddle_Maron", twitch: "https://www.twitch.tv/maronnv", clips: ["https://youtu.be/G6y2huZOoKo?si=C-R5NfVHYMo8uejW","https://youtu.be/-1nQUB4DRkQ?si=mLDQd44d5xxFXKFY"], bio: "ストリーマー部門所属。" },
+                { name: "けいき", role: "STREAMER", icon: "未", x: "https://x.com/keikiww", yt: "https://www.youtube.com/@keikich", twitch: "https://www.twitch.tv/keikich37564", clips: ["https://youtu.be/2Thn9r3CUoE?si=Um5JCUJjJh0hv8T5"], bio: "次世代のFortniteストリーマー。" }
+            ],
+            'tab-creator': [
+                { name: "まうふぃん(Maufin)", role: "CONTENT CREATOR", icon: "神", x: "https://x.com/Maufinfn", yt: "https://www.youtube.com/@Maufin", twitch: "https://www.twitch.tv/maufinvl", clips: ["https://youtu.be/4jWq-3Ov13o?si=5m3pAWHLd5gJjQBy","https://youtu.be/5AAH3B5jHa4?si=rKy4bJTpZ5CzF4ZU"], bio: "FORTNITE界のレジェンドであり、VALORANT部門も経験。" },
+                { name: "ふぁいあー(Fire)", role: "CONTENT CREATOR", icon: "火", x: "https://x.com/firedesuo_O", yt: "https://www.youtube.com/@firedesu", twitch: "https://www.twitch.tv/firedesu7", clips: [], bio: "FORTNITE部門から転向。" }
+            ],
+            'tab-apex': [
+                { name: "Meltstera", role: "Pro / APEX", icon: "M", x: "https://x.com/Meltstera", yt: "https://www.youtube.com/@Meltstera", twitch: "https://www.twitch.tv/meltstera", clips: ["https://youtu.be/HD9eIqIqZgk?si=J_WJpv715RgMnrLC"], bio: "APEX部門選手。" },
+                { name: "Acca", role: "Pro / APEX", icon: "A", x: "", yt: "", twitch: "https://www.twitch.tv/accavvip", clips: [], bio: "APEX部門選手。" },
+                { name: "egoist", role: "Pro / APEX", icon: "e", x: "https://x.com/imegoist222", yt: "", twitch: "", clips: [], bio: "APEX部門選手。" },
+                { name: "kamaneko", role: "Pro / APEX", icon: "k", x: "https://x.com/hironeko", yt: "https://www.youtube.com/@%E3%81%8B%E3%81%BE%E3%81%AD%E3%81%93-h4y", twitch: "https://www.twitch.tv/kamaneko0_0", clips: [], bio: "APEX部門選手。" },
+                { name: "あっしー", role: "Assistant", icon: "あ", x: "https://x.com/4ssiikun", yt: "https://www.youtube.com/@4ssiikun", twitch: "https://www.twitch.tv/assiikun", clips: ["https://youtu.be/4KPv-QYtnP8?si=dLPUcSOt6HO7Ecdd","https://youtu.be/pCwpOha-LLg?si=FAomdnPjBnFCPHTe","https://youtu.be/MpquwfsZdmI?si=OiOW3kS9bmaOJkO4"], bio: "APEX部門アシスタント/マネージャー。" },
+                { name: "Akabeko", role: "Coach", icon: "A", x: "", yt: "", twitch: "https://x.com/akbkanalyst", clips: [], bio: "APEX部門コーチ。" },
+                { name: "ぱるぶす", role: "PUV Character", icon: "ぱ", x: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99%E4%BA%BA%E5%BD%A22025%E3%83%A6%E3%83%8B%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0ver", yt: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99-%E3%83%A9%E3%83%90%E3%83%BC%E3%82%AD%E3%83%BC%E3%83%9B%E3%83%AB%E3%83%80%E3%83%BC", twitch: "https://shop.riddle.info/", clips: ["https://x.com/pulvess/status/1849752849863118938"], bio: " 非・公式マスコット。" }
+            ],
+            'tab-valo': [
+                { name: "Seoldam", role: "Pro / VALO", icon: "S", x: "https://x.com/SeoldamTwit", yt: "https://www.youtube.com/@riddleseoldam397", twitch: "", clips: ["https://youtu.be/iYmCNw0XNfY?si=qfCbH1UtdRdhKXio","https://youtu.be/JmGTOk41Zi8?si=cC_08qk9Ym5Wq9s0"], bio: "Korean Jettとして知られる圧倒的フィジカルを持つプレイヤー。" },
+                { name: "JoXJo", role: "Pro / VALO", icon: "J", x: "https://x.com/JoXJo_by", yt: "", twitch: "", clips: [], bio: "名IGLとして知られる頭脳派プレイヤー。" },
+                { name: "Minty", role: "Pro / VALO", icon: "M", x: "https://x.com/MintyVL", yt: "https://www.youtube.com/@Mintych", twitch: "https://www.twitch.tv/mintyjp", clips: [], bio: "高いエイム力を誇るプレイヤー。" },
+                { name: "gyen", role: "Pro / VALO", icon: "g", x: "https://x.com/gyen_ow", yt: "https://www.youtube.com/@gyenow/videos", twitch: "https://www.twitch.tv/gyenow", clips: [], bio: "VALORANT部門の新星。" },
+                { name: "Luca", role: "Pro / VALO", icon: "L", x: "https://x.com/Luca_fps15", yt: "", twitch: "", clips: [], bio: "VALORANT部門の新星。" },
+                { name: "nokaze", role: "Coach", icon: "n", x: "https://x.com/nkz37_", yt: "", twitch: "", clips: [], bio: "VALORANT部門コーチ。" },
+                { name: "mun", role: "Coach", icon: "m", x: "https://x.com/mun_fps", yt: "", twitch: "", clips: [], bio: "VALORANT部門コーチ。" }
+            ],
+            'tab-sf': [
+                { name: "高木", role: "Pro / SF6", icon: "高", x: "https://x.com/Takagi_Progamer", yt: "https://www.youtube.com/@takagikirinukidouga", twitch: "https://www.twitch.tv/takagitv", clips: ["https://www.youtube.com/watch?v=z0o8mzgScX0&list=RDz0o8mzgScX0&start_radio=1"], bio: "ストリーマー部門から転向し、SFL JPに挑戦。" },
+                { name: "あでりい", role: "Pro / SF6", icon: "あ", x: "https://x.com/adelie54", yt: "", twitch: "https://www.twitch.tv/adelie54", clips: [], bio: "ストリートファイターリーグ: Pro-JPロスター。" },
+                { name: "Jr.", role: "Pro / SF6", icon: "J", x: "https://x.com/juniorchaaaan", yt: "", twitch: "https://www.twitch.tv/juniorzangief", clips: [], bio: "ストリートファイターリーグ: Pro-JPロスター。" },
+                { name: "ひかる", role: "Pro / SF6", icon: "ひ", x: "https://x.com/hikaru_shiftne", yt: "https://www.youtube.com/@hikaru_shiftne", twitch: "https://www.twitch.tv/hikaru_shiftne", clips: [], bio: "ZETA DIVISIONから移籍。" },
+                { name: "重松", role: "Pro / SF6", icon: "重", x: "https://x.com/yukariblanka", yt: "", twitch: "https://www.twitch.tv/shigematsu_sf6", clips: [], bio: "以前は「ゆかりさん（Yukadon）」として活動。" }
+            ],
+            'tab-fortnite': [
+                { name: "りせ", role: "Pro / FORTNITE", icon: "り", x: "https://x.com/RiseGotGamer", yt: "https://www.youtube.com/@risegotgamer", twitch: "https://www.twitch.tv/r1selll", clips: [], bio: "FORTNITE部門。" }
+            ],
+            'tab-shadow': [
+                { name: "折り紙", role: "Pro / Shadowverse", icon: "折", x: "https://x.com/Origami_sv", yt: "https://www.youtube.com/channel/UCSrjfKnHpvKvRa8Ag8ZE2kg", twitch: "https://www.twitch.tv/origamisv/", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" },
+                { name: "山田レクイエム", role: "Pro / Shadowverse", icon: "山", x: "https://x.com/YMDrequiem", yt: "https://www.youtube.com/channel/UCiO4oBF-a113Cpx7QKNxEVA", twitch: "", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" },
+                { name: "Chappy", role: "Pro / Shadowverse", icon: "C", x: "https://x.com/chappy_106", yt: "", twitch: "https://www.twitch.tv/chappy916", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" },
+                { name: "さくさくぱんだ", role: "Pro / Shadowverse", icon: "さ", x: "https://x.com/sakura_hf_", yt: "https://www.youtube.com/channel/UCw6cXPqVtF5KVP4qEVFWNqw", twitch: "", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" },
+                { name: "Stylish_deko", role: "Pro / Shadowverse", icon: "S", x: "https://x.com/Stylish_deko", yt: "https://www.youtube.com/@stylish_deko", twitch: "https://www.twitch.tv/stylish_deko", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" }
+            ],
+            'tab-bf': [
+                { name: "S1Yuq", role: "Pro / BF", icon: "S", x: "https://x.com/S1Yuq", yt: "https://www.youtube.com/channel/UCzOaIviiF1-0vyoOFY2Og-Q", twitch: "", clips: [], bio: "BATTLEFIELD部門選手。データ準備中。" },
+                { name: "テディ", role: "Pro / BF", icon: "テ", x: "https://x.com/NemesisTeddy", yt: "https://www.youtube.com/channel/UCZaDEq19SbsaFXceOf1J9_w", twitch: "", clips: [], bio: "BATTLEFIELD部門選手。データ準備中。" },
+                { name: "Akashi", role: "Pro / BF", icon: "A", x: "https://x.com/akashi0716", yt: "https://www.youtube.com/channel/UCHxuElypUpl1QT9zyqBDFiA", twitch: "", clips: [], bio: "BATTLEFIELD部門選手。データ準備中。" },
+                { name: "もりこ", role: "Pro / BF", icon: "も", x: "https://x.com/lVlrkt", yt: "https://www.youtube.com/@Moriko3", twitch: "", clips: [], bio: "BATTLEFIELD部門選手。データ準備中。" },
+                { name: "あいちぇん", role: "Pro / BF", icon: "あ", x: "https://x.com/ichengsp", yt: "https://www.youtube.com/@ichengs/featured", twitch: "", clips: [], bio: "BATTLEFIELD部門選手。データ準備中。" }
+            ]
+        };
+
+        function getBgImageUrl(bgImage) {
+            if (!bgImage || bgImage === 'none') return 'none';
+            if (bgImage.startsWith('url(')) return bgImage;
+            return `url("${bgImage}")`;
+        }
+
+        function createIconElement(iconData, isModal = false) {
+            let className = isModal ? 'modal-header-icon' : 'member-icon';
+            if (!iconData) iconData = "?";
+            
+            if (iconData.startsWith('http')) {
+                return `<div class="${className}" style="background-image: url('${iconData}'); background-color: transparent;"></div>`;
+            } else {
+                return `<div class="${className}">${iconData}</div>`;
+            }
+        }
+
+        function getMemberData(departmentId, index) {
+            if (MEMBER_DETAILS[departmentId] && MEMBER_DETAILS[departmentId][index]) {
+                return MEMBER_DETAILS[departmentId][index];
+            }
+            return {
+                name: `Member ${index + 1}`,
+                role: DEPARTMENT_DATA[departmentId].title === 'APEX' ? 'Pro / APEX' : 'Player',
+                icon: "?",
+                x: "", yt: "", twitch: "", clips: [],
+                bio: "現在データ準備中です。"
+            };
+        }
+
+        const visualConfig = { bubbleOpacity: 0.85 };
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        const manager = new THREE.LoadingManager();
+        manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {
+            const progress = (itemsLoaded / itemsTotal) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        };
+        manager.onLoad = function ( ) {
+            setTimeout(() => {
+                gsap.to('#loading-screen', { opacity: 0, duration: 0.8, onComplete: () => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.body.style.overflowX = 'hidden';
+                    document.body.style.overflowY = 'auto';
+                    document.getElementById('scroll-proxy').style.display = 'block';
+                    ScrollTrigger.refresh();
+                }});
+            }, 500);
+        };
+
+        window.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf5f5f5); 
+        camera.position.set(0, 0, 25);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        directionalLight.position.set(10, 20, 10);
+        scene.add(directionalLight);
+
+        const memberGeometry = new THREE.TorusGeometry(3, 1, 16, 100);
+        const memberMaterial = new THREE.MeshStandardMaterial({ color: 0xffe600, wireframe: true });
+        const memberObj = new THREE.Mesh(memberGeometry, memberMaterial);
+        memberObj.position.set(15, 0, -25);
+        scene.add(memberObj);
+
+        const historyGeometry = new THREE.IcosahedronGeometry(4, 1);
+        const historyMaterial = new THREE.MeshStandardMaterial({ color: 0x000000, wireframe: true });
+        const historyObj = new THREE.Mesh(historyGeometry, historyMaterial);
+        historyObj.position.set(-15, 0, -70);
+        scene.add(historyObj);
+
+        const simpleBubbleMaterial = new THREE.MeshStandardMaterial({ transparent: true, opacity: visualConfig.bubbleOpacity, roughness: 0.3, metalness: 0.1 });
+        const floatingBubbles = [];
+        const clickableObjects = []; 
+        const decorativeMeshes = []; 
+        
+        let mixer; 
+        const clock = new THREE.Clock();
+        
+        const textureLoader = new THREE.TextureLoader(manager);
+        
+        const MEMBER_ICONS = ['https://pbs.twimg.com/media/GTkyf-qbwAAV59u?format=jpg&name=small'];
+        const BUBBLE_LINKS = [
+            { url: 'https://youtu.be/gw0SxB-dJB8?si=70dY0ohasNY-JNCE', position: { x: -8, y: 3, z: 12 }, fixedColor: 0x111111 },
+            { url: 'https://youtu.be/M5268OftxDc?si=hi3_Vb2F3LBvJth4', position: { x: 8, y: 5, z: 8 }, fixedColor: 0xffe600 },
+            { url: 'https://www.youtube.com/watch?v=qwtQ2T7G098', position: { x: 4, y: -4, z: 15 }, fixedColor: 0x111111 }
+        ];
+
+        BUBBLE_LINKS.forEach(data => {
+            const group = new THREE.Group();
+            group.position.set(data.position.x, data.position.y, data.position.z);
+            const mat = simpleBubbleMaterial.clone();
+            mat.color.setHex(data.fixedColor);
+            const sphereGeo = new THREE.SphereGeometry(1.5, 32, 32);
+            const bubbleMesh = new THREE.Mesh(sphereGeo, mat); 
+            group.add(bubbleMesh);
+            textureLoader.load(MEMBER_ICONS[0], (texture) => {
+                const circleGeo = new THREE.CircleGeometry(0.8, 32); 
+                const circleMat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true });
+                const circleMesh = new THREE.Mesh(circleGeo, circleMat);
+                group.add(circleMesh);
+            });
+            group.userData = { isClickable: true, url: data.url };
+            clickableObjects.push(bubbleMesh); 
+            floatingBubbles.push({ mesh: group, mat: mat, speedY: 0, offsetX: Math.random() * Math.PI * 2 });
+            scene.add(group);
+        });
+
+        const BUBBLE_COLORS = [0xffe600, 0x111111, 0x0055ff];
+        for (let i = 0; i < 20; i++) { 
+            const mat = simpleBubbleMaterial.clone();
+            mat.color.setHex(BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)]);
+            const size = Math.random() * 1.5 + 0.5;
+            const geo = new THREE.SphereGeometry(size, 32, 32); 
+            const mesh = new THREE.Mesh(geo, mat); 
+            mesh.position.set((Math.random() - 0.5) * 35, (Math.random() - 0.5) * 25, (Math.random() * -15) - 5);
+            
+            // ★ホバーエフェクト復活のため、元の色などを userData に保存
+            mesh.userData = { 
+                lastSplitTime: 0, 
+                isHoverable: true, 
+                originalColor: mat.color.getHex(),
+                isHovered: false,
+                targetScale: 1.0
+            };
+            
+            floatingBubbles.push({ mesh: mesh, mat: mat, speedY: Math.random() * 0.02 + 0.01, offsetX: Math.random() * Math.PI * 2 });
+            decorativeMeshes.push(mesh); 
+            scene.add(mesh);
+        }
+
+        let textMesh;
+        let isEntranceDone = false;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let targetScale = 1.0; let targetRotX = 0; let targetRotY = Math.PI * 2; 
+
+        renderer.compile(scene, camera);
+
+        const fontLoader = new FontLoader(manager);
+        fontLoader.load('https://unpkg.com/three@0.128.0/examples/fonts/optimer_bold.typeface.json', function (font) {
+            const textGeometry = new TextGeometry('Riddle Order', { font: font, size: 3.5, height: 1.0, curveSegments: 12, bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.05, bevelOffset: 0, bevelSegments: 5 });
+            textGeometry.center();
+            const materials = [ new THREE.MeshStandardMaterial({ color: 0xffe600, roughness: 0.3, metalness: 0.1 }), new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.7, metalness: 0.5 }) ];
+            textMesh = new THREE.Mesh(textGeometry, materials);
+            textMesh.position.y = -10; 
+            scene.add(textMesh);
+            gsap.to(textMesh.position, { y: 0, duration: 2.5, ease: "back.out(1.2)", delay: 0.5 });
+            gsap.to(textMesh.rotation, { x: 0, y: Math.PI * 2, duration: 3.0, ease: "power3.out", delay: 0.5, onComplete: () => { isEntranceDone = true; initScrollTimeline(); } });
+        });
+
+        function animateMemberUI() {
+            const catSelection = document.getElementById('category-selection');
+            if (catSelection.style.display === 'none') return;
+            gsap.fromTo("#category-selection .category-item", 
+                { opacity: 0, y: 50 }, 
+                { opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: "back.out(1.2)", overwrite: true }
+            );
+        }
+
+        function initScrollTimeline() {
+            const tl = gsap.timeline({ scrollTrigger: { trigger: "#scroll-proxy", start: "top top", end: "bottom bottom", scrub: 1 } });
+            tl.to("#hero", { opacity: 0, pointerEvents: "none", duration: 1 })
+              .to(camera.position, { x: 15, z: -15, duration: 4 }, "<")
+              .to(camera.rotation, { y: 0.3, duration: 4 }, "<")
+              .to(visualConfig, { bubbleOpacity: 0.0, duration: 1.5 }, "<") 
+              .to("#members", { opacity: 1, pointerEvents: "auto", duration: 1, onStart: animateMemberUI }, "-=1")
+              .to("#members", { opacity: 0, pointerEvents: "none", duration: 1, onReverseComplete: animateMemberUI })
+              .to(camera.position, { x: -15, z: -60, duration: 4 }, "<")
+              .to(camera.rotation, { y: -0.2, duration: 4 }, "<")
+              .to(visualConfig, { bubbleOpacity: 0.85, duration: 1.5 }, "<") 
+              .to("#history", { opacity: 1, pointerEvents: "auto", duration: 1 }, "-=1")
+              .to("#history", { opacity: 0, pointerEvents: "none", duration: 1 })
+              .to(camera.position, { x: 0, z: -100, duration: 4 }, "<")
+              .to(camera.rotation, { y: 0, duration: 4 }, "<")          
+              .to("#notes", { opacity: 1, pointerEvents: "auto", duration: 1 }, "-=1");
+        }
+
+        window.scrollToProgress = function(progress) {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            gsap.to(window, { duration: 1.5, scrollTo: maxScroll * progress, ease: "power2.inOut" });
+        };
+        
+        window.addEventListener('load', () => {
+            window.scrollTo(0, 0); 
+            camera.position.set(0, 0, 25); 
+            
+            const catContainer = document.getElementById('category-selection');
+            const tabContainer = document.getElementById('dynamic-tabs');
+            const panelsContainer = document.getElementById('dynamic-panels');
+            
+            Object.keys(DEPARTMENT_DATA).forEach((id, index) => {
+                const data = DEPARTMENT_DATA[id];
+
+                catContainer.innerHTML += `
+                    <div class="category-item" onclick="openMemberDetails('${id}')">
+                        <div class="category-image" style="background-image: url('${data.thumb}');"></div>
+                        <div class="category-tab">${data.title}</div>
+                    </div>
+                `;
+
+                tabContainer.innerHTML += `<button class="m-tab ${index===0?'active':''}" id="btn-${id}" onclick="switchMemberTab('${id}')">${data.title}</button>`;
+
+                let membersHtml = '';
+                for(let i = 0; i < data.count; i++) {
+                    const memberInfo = getMemberData(id, i);
+                    const argStr = encodeURIComponent(JSON.stringify(memberInfo));
+                    
+                    const iconElement = createIconElement(memberInfo.icon, false);
+                    
+                    membersHtml += `
+                        <div class="member-card" onclick="openModal('${argStr}')">
+                            ${iconElement}
+                            <h3 class="member-name">${memberInfo.name}</h3>
+                            <p class="member-role">${memberInfo.role}</p>
+                        </div>`;
+                }
+                panelsContainer.innerHTML += `<div id="${id}" class="member-panel ${index===0?'active-panel':''}">${membersHtml}</div>`;
+            });
+        });
+
+        window.openModal = function(encodedData) {
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            
+            const oldAmu = document.getElementById('amu-stamp-effect');
+            if (oldAmu) oldAmu.remove();
+
+            document.getElementById('modal-name-display').innerText = data.name;
+            document.getElementById('modal-role-display').innerText = data.role;
+            
+            const iconElementHtml = createIconElement(data.icon, true);
+            const modalHeader = document.querySelector('.modal-header');
+            const existingIcon = document.getElementById('modal-icon-display');
+            if (existingIcon) existingIcon.remove();
+            
+            modalHeader.insertAdjacentHTML('afterbegin', iconElementHtml.replace('class="modal-header-icon"', 'id="modal-icon-display" class="modal-header-icon"'));
+            
+            document.getElementById('modal-bio-display').innerText = data.bio;
+
+            let socialsHtml = '';
+            
+            if(data.x && data.x !== "" && data.x !== "#") {
+                if(data.x.includes("shop.riddle.info")) {
+                    socialsHtml += `<a href="${data.x}" target="_blank" class="social-btn shop"><i class="fa-solid fa-cart-shopping"></i>グッズ(人形)</a>`;
+                } else {
+                    socialsHtml += `<a href="${data.x}" target="_blank" class="social-btn x"><i class="fa-brands fa-x-twitter"></i>X</a>`;
+                }
+            }
+            if(data.yt && data.yt !== "" && data.yt !== "#") {
+                if(data.yt.includes("shop.riddle.info")) {
+                    socialsHtml += `<a href="${data.yt}" target="_blank" class="social-btn shop"><i class="fa-solid fa-cart-shopping"></i>グッズ(ラバキー)</a>`;
+                } else {
+                    socialsHtml += `<a href="${data.yt}" target="_blank" class="social-btn yt"><i class="fa-brands fa-youtube"></i>YouTube</a>`;
+                }
+            }
+            if(data.twitch && data.twitch !== "" && data.twitch !== "#") {
+                if(data.twitch.includes("shop.riddle.info")) {
+                    socialsHtml += `<a href="${data.twitch}" target="_blank" class="social-btn shop"><i class="fa-solid fa-cart-shopping"></i>Shop</a>`;
+                } else {
+                    socialsHtml += `<a href="${data.twitch}" target="_blank" class="social-btn tw"><i class="fa-brands fa-twitch"></i>Twitch</a>`;
+                }
+            }
+            
+            // ★ 葉選手の場合に、追加のYouTubeチャンネルリンクを挿入
+            if (data.specialLinks && data.specialLinks.length > 0) {
+                let partnerHtml = '<div class="partner-links" style="width: 100%;">';
+                data.specialLinks.forEach(link => {
+                    partnerHtml += `<a href="${link.url}" target="_blank" class="partner-btn"><i class="fa-brands fa-youtube"></i>${link.title}</a>`;
+                });
+                partnerHtml += '</div>';
+                socialsHtml += partnerHtml;
+            }
+            
+            document.getElementById('modal-socials').innerHTML = socialsHtml;
+
+            const videoContainer = document.getElementById('modal-video-wrapper');
+            if(data.clips && data.clips.length > 0) {
+                videoContainer.style.display = "flex";
+                
+                videoContainer.innerHTML = data.clips.map(clipUrl => {
+                    if (clipUrl.includes('x.com') || clipUrl.includes('twitter.com')) {
+                        const tweetUrl = clipUrl.replace('x.com', 'twitter.com');
+                        return `
+                        <div class="modal-tweet-item">
+                            <blockquote class="twitter-tweet" data-theme="dark">
+                                <a href="${tweetUrl}"></a>
+                            </blockquote>
+                        </div>`;
+                    } else {
+                        let embedUrl = clipUrl;
+                        if (clipUrl.includes('youtube.com/shorts/')) {
+                            embedUrl = clipUrl.replace('youtube.com/shorts/', 'youtube.com/embed/');
+                        } else if (clipUrl.includes('youtu.be/')) {
+                            embedUrl = clipUrl.replace('youtu.be/', 'youtube.com/embed/');
+                        } else if (clipUrl.includes('youtube.com/watch?v=')) {
+                            let urlObj;
+                            try {
+                                urlObj = new URL(clipUrl);
+                                const videoId = urlObj.searchParams.get('v');
+                                let timeParam = urlObj.searchParams.get('t');
+                                embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                                if (timeParam) {
+                                    timeParam = timeParam.replace('s', '');
+                                    embedUrl += `?start=${timeParam}`;
+                                }
+                            } catch (e) {
+                                embedUrl = clipUrl.replace('youtube.com/watch?v=', 'youtube.com/embed/').split('&')[0];
+                            }
+                        }
+                        return `<div class="modal-video-item"><iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                    }
+                }).join('');
+
+                if (window.twttr && window.twttr.widgets) {
+                    window.twttr.widgets.load(videoContainer);
+                }
+
+            } else {
+                videoContainer.style.display = "none";
+                videoContainer.innerHTML = '';
+            }
+
+            const overlay = document.getElementById('modal-overlay');
+            overlay.style.display = 'flex';
+            gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+            gsap.fromTo(".modal-content", { y: 50, scale: 0.9 }, { y: 0, scale: 1, duration: 0.4, ease: "back.out(1.5)" });
+
+            if (data.name.includes("ボドカ")) {
+                const amu = document.createElement('div');
+                amu.id = 'amu-stamp-effect';
+                amu.className = 'amu-stamp';
+                amu.innerText = "🐶"; 
+                document.querySelector('.modal-content').appendChild(amu);
+
+                gsap.fromTo(amu, 
+                    { scale: 0, opacity: 0, rotation: -40 }, 
+                    { scale: 1, opacity: 1, rotation: 20, duration: 0.7, ease: "back.out(2)", delay: 0.4 }
+                );
+            }
+        };
+
+        window.closeModal = function(e) {
+            if (e && e.target.id !== 'modal-overlay') return;
+            const overlay = document.getElementById('modal-overlay');
+            gsap.to(".modal-content", { y: 30, scale: 0.9, duration: 0.2 });
+            gsap.to(overlay, { opacity: 0, duration: 0.2, onComplete: () => {
+                overlay.style.display = 'none';
+                document.getElementById('modal-video-wrapper').innerHTML = ''; 
+                const oldAmu = document.getElementById('amu-stamp-effect');
+                if (oldAmu) oldAmu.remove();
+            }});
+        };
+
+        window.openMemberDetails = function(targetId) {
+            const catSelection = document.getElementById('category-selection');
+            const memberDetails = document.getElementById('member-details');
+            gsap.to(catSelection.querySelectorAll('.category-item'), { opacity: 0, y: -20, duration: 0.3, stagger: 0.05, onComplete: () => {
+                catSelection.style.display = 'none';
+                memberDetails.style.display = 'flex';
+                switchMemberTab(targetId, true);
+                gsap.fromTo(memberDetails, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6 });
+            }});
+        };
+
+        window.showCategorySelection = function() {
+            const catSelection = document.getElementById('category-selection');
+            const memberDetails = document.getElementById('member-details');
+            const bgElement = document.getElementById('department-bg');
+            bgElement.style.opacity = 0; 
+            gsap.to(memberDetails, { opacity: 0, y: 30, duration: 0.3, onComplete: () => {
+                memberDetails.style.display = 'none';
+                catSelection.style.display = 'flex';
+                gsap.set(catSelection, { opacity: 1, scale: 1 }); 
+                gsap.fromTo(catSelection.querySelectorAll('.category-item'), { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: "back.out(1.2)" });
+            }});
+        };
+
+        window.switchMemberTab = function(targetId, skipAnim = false) {
+            document.querySelectorAll('.m-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${targetId}`).classList.add('active');
+            const currentPanel = document.querySelector('.member-panel.active-panel');
+            const nextPanel = document.getElementById(targetId);
+            const bgElement = document.getElementById('department-bg');
+            
+            bgElement.style.backgroundImage = getBgImageUrl(DEPARTMENT_DATA[targetId].bgImage);
+            bgElement.style.opacity = DEPARTMENT_DATA[targetId].bgImage !== 'none' ? 0.4 : 0;
+            
+            if (currentPanel === nextPanel && !skipAnim) return;
+            if (!skipAnim) gsap.to(camera.position, { z: camera.position.z - 8, duration: 0.4, yoyo: true, repeat: 1, ease: "power2.inOut" });
+
+            const nextCards = nextPanel.querySelectorAll('.member-card');
+            const animDuration = 0.6; const animStagger = 0.15; 
+            
+            if (currentPanel && !skipAnim) {
+                gsap.to(currentPanel, { opacity: 0, scale: 1.1, duration: 0.4, ease: "power2.in", onComplete: () => {
+                    currentPanel.classList.remove('active-panel'); currentPanel.style.display = 'none';
+                    nextPanel.style.display = 'flex'; nextPanel.classList.add('active-panel');
+                    gsap.set(nextPanel, { opacity: 1, scale: 1 });
+                    
+                    gsap.fromTo(nextCards, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: animDuration, stagger: animStagger, ease: "back.out(1.5)", clearProps: "transform" });
+                }});
+            } else {
+                if(currentPanel) { currentPanel.classList.remove('active-panel'); currentPanel.style.display = 'none'; }
+                nextPanel.style.display = 'flex'; nextPanel.classList.add('active-panel');
+                gsap.set(nextPanel, { opacity: 1, scale: 1 });
+                
+                gsap.fromTo(nextCards, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: animDuration, stagger: animStagger, ease: "back.out(1.5)", delay: 0.2, clearProps: "transform" });
+            }
+        };
+
+        // ★ ホバーエフェクト処理の復活
+        window.addEventListener('mousemove', (e) => {
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail'; trail.style.left = e.clientX + 'px'; trail.style.top = e.clientY + 'px';
+            const time = Date.now() * 0.002; const hue = 285 + Math.sin(time) * 45; 
+            trail.style.backgroundColor = `hsl(${hue}, 100%, 65%)`; trail.style.boxShadow = `0 0 15px 3px hsl(${hue}, 100%, 65%)`;
+            document.body.appendChild(trail);
+            gsap.to(trail, { opacity: 0, scale: 0.2, duration: 0.8, ease: "power2.out", onComplete: () => trail.remove() });
+
+            if (!isEntranceDone) return;
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1; mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            let isHoveringSomething = false;
+            if (textMesh) {
+                const textIntersects = raycaster.intersectObject(textMesh);
+                if (textIntersects.length > 0) { targetScale = 1.15; targetRotX = mouse.y * 0.4; targetRotY = (Math.PI * 2) + (mouse.x * 0.4); isHoveringSomething = true; } 
+                else { targetScale = 1.0; targetRotX = 0; targetRotY = Math.PI * 2; }
+            }
+            
+            // ★ シャボン玉のホバー判定と色変更
+            const intersects = raycaster.intersectObjects([...clickableObjects, ...decorativeMeshes]);
+            
+            // 一旦すべての装飾用シャボン玉のホバー状態をリセット
+            decorativeMeshes.forEach(mesh => {
+                if (mesh.userData.isHoverable) {
+                    mesh.userData.isHovered = false;
+                    mesh.userData.targetScale = 1.0;
+                }
+            });
+
+            if (intersects.length > 0) {
+                isHoveringSomething = true;
+                const hitObj = intersects[0].object;
+                
+                // もし装飾用のシャボン玉なら
+                if (hitObj.userData.isHoverable) {
+                    hitObj.userData.isHovered = true;
+                    hitObj.userData.targetScale = 1.3; // ホバーで少し大きく
+                    hitObj.material.color.setHex(0xffffff); // ホバー中は白っぽく光る
+                    hitObj.material.opacity = 1.0;
+                }
+            }
+            
+            renderer.domElement.style.cursor = isHoveringSomething ? 'pointer' : 'default';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!isEntranceDone) return;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableObjects);
+            if (intersects.length > 0) {
+                const url = intersects[0].object.parent.userData.url;
+                if(url) window.open(url, '_blank');
+            }
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (memberObj) { memberObj.rotation.x += 0.005; memberObj.rotation.y += 0.005; }
+            if (historyObj) { historyObj.rotation.x -= 0.005; historyObj.rotation.y -= 0.005; }
+            if (textMesh && isEntranceDone) {
+                textMesh.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+                textMesh.rotation.x += (targetRotX - textMesh.rotation.x) * 0.1;
+                textMesh.rotation.y += (targetRotY - textMesh.rotation.y) * 0.1;
+            }
+            const time = Date.now() * 0.001;
+            const delta = clock.getDelta();
+            
+            if (mixer) {
+                mixer.update(delta);
+            }
+            
+            floatingBubbles.forEach((bubble) => {
+                if (bubble.mat) {
+                    // ★ ホバーされていないシャボン玉の色とサイズを元に戻すアニメーション
+                    if (bubble.mesh.userData.isHoverable) {
+                        if (!bubble.mesh.userData.isHovered) {
+                            bubble.mat.color.setHex(bubble.mesh.userData.originalColor);
+                        }
+                        // スケールを滑らかに変化
+                        const currentScale = bubble.mesh.scale.x;
+                        const tScale = bubble.mesh.userData.targetScale;
+                        const newScale = currentScale + (tScale - currentScale) * 0.1;
+                        bubble.mesh.scale.set(newScale, newScale, newScale);
+                    }
+                    
+                    if (!bubble.mesh.userData.isHovered) {
+                        bubble.mat.opacity = visualConfig.bubbleOpacity; 
+                    }
+                    bubble.mat.needsUpdate = true;
+                    bubble.mesh.visible = visualConfig.bubbleOpacity > 0.01;
+                }
+                
+                if (bubble.mesh.userData && bubble.mesh.userData.isClickable) {
+                    if (bubble.initialY === undefined) { 
+                        bubble.initialY = bubble.mesh.position.y; 
+                        bubble.initialX = bubble.mesh.position.x; 
+                    }
+                    bubble.mesh.position.y = bubble.initialY + Math.sin(time * 2 + bubble.offsetX) * 0.5;
+                    bubble.mesh.position.x = bubble.initialX + Math.cos(time * 1.5 + bubble.offsetX) * 0.5;
+                    
+                    if (bubble.mesh.children.length > 1) {
+                        bubble.mesh.children[1].lookAt(camera.position);
+                    }
+                } else {
+                    bubble.mesh.position.y += bubble.speedY; 
+                    bubble.mesh.position.x += Math.sin(time + bubble.offsetX) * 0.01;
+                    if (bubble.mesh.position.y > 15) bubble.mesh.position.y = -15;
+                }
+            });
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
