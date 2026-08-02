@@ -4,16 +4,14 @@
     <meta name="google-site-verification" content="kp4nykNjpOadXSayFDmKE4uZ5IqUZWONIvYWj2GyYyo" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riddle Order 非公式 3Dファンサイト | ポートフォリオ</title>
+    <title>Riddle Order ファンサイト esport リドル vdk</title>
     
     <!-- ▼ 検索結果の下に表示される説明文（ディスクリプション） -->
-    <meta name="description" content="プロゲーミングチーム「Riddle Order」の非公式3Dインタラクティブファンサイトです。Three.jsとGSAPを使用し、選手データを3D空間で表現しています。">
+    <meta name="description" content="プロゲーミングチーム「Riddle Order」のファンサイトです。">
     
     <!-- ▼ 検索キーワード（現在はGoogleはあまり重視しませんが念のため） -->
-    <meta name="keywords" content="Riddle, Riddle Order, ボドカ, 非公式, 3Dサイト, Three.js">
-
-    <!-- （以下、既存のGSAPなどの読み込み...） -->
-    
+    <meta name="keywords" content="Riddle, Riddle Order, ボドカ, リドル, 葉, apex, valorant, ストリーマー, プロゲーマー, ファンサイト, esport, vdk, streamer, ゲーム">
+    <link rel="icon" href="images/Riddle.jpg">
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -279,25 +277,24 @@
 
         const MEMBER_DETAILS = {
             'tab-streamer': [
-                { name: "vdk(ボドカ)", role: "OWNER", icon: "愛", x: "https://x.com/VodkaChaso", yt: "https://www.youtube.com/@vodkachaso", twitch: "https://twitch.tv/vodkavdk", clips: ["https://www.youtube.com/embed/qwtQ2T7G098","https://www.youtube.com/watch?v=tdPyYYMjMMQ&t=2460s","https://youtu.be/8u3OjjOnMdA?si=4Z8aNUEM2ljfsjJ3","https://www.youtube.com/shorts/yBGv_BruEY0"], bio: "RIDDLE ORDERのオーナー。圧倒的なエイムと感情豊かなプレイで視聴者を魅了する。" },
-                { name: "しんじさん", role: "STREAMER", icon: "髭", x: "https://x.com/Shinjisan_XD", yt: "https://www.youtube.com/@shinji3XD", twitch: "https://www.twitch.tv/shinjifromjapanxd", clips: ["https://youtu.be/GuZdBoTBR_s?si=epGZBMqOmxNWKxs5","https://www.youtube.com/shorts/fN0gj8yQmmA","https://youtu.be/0wX6qvjZ-9E?si=YDk0gMB4yeEmjiDU"], bio: "ストリーマー部門所属。" },
-                { name: "ありけん", role: "STREAMER", icon: "太", x: "https://x.com/guraburuslot777", yt: "https://www.youtube.com/@arikenDB", twitch: "https://www.twitch.tv/arikendebu", clips: ["https://youtu.be/-Ouoararf6U?si=xHA8aahf_Ygif_ak","https://youtube.com/shorts/nYOtNBsAo08?si=68jsJL3xkmWT7NT9","https://youtu.be/FqUgILmcMCE?si=aqUescuinGgeoN7-"], bio: "ストリーマー部門所属。" },
-                // ★ 葉選手のデータに specialLinks を追加
-                { name: "葉", role: "STREAMER", icon: "細", x: "https://x.com/yohdayo", yt: "https://www.youtube.com/@yohtubedayo", twitch: "https://www.twitch.tv/yohdazo", clips: ["https://youtu.be/zsd4A1MrEec?si=02bMFVf08lauevN5","https://youtu.be/JqIPdUv6TQ8?si=AQxamv3W1RqSgzzy"], bio: "ストリーマー部門所属。", specialLinks: [ { title: "葉GONカップルチャンネル", url: "https://www.youtube.com/@yoh_gon" }, { title: "GONチャンネル", url: "https://www.youtube.com/@gon_vl" } ] },
-                { name: "YUKIO", role: "STREAMER", icon: "幼", x: "https://x.com/YukioFPS", yt: "https://www.youtube.com/@YUKIOMELTDOWN", twitch: "https://www.twitch.tv/yukiofps14", clips: ["https://youtube.com/shorts/iVCS0Rvm-gk?si=ThFpon2FwJ0BmD6_","https://youtu.be/lBJ9maHihp4?si=fnbU53gvbLEfTs3G","https://youtu.be/HGbfEsPvv6E?si=eOgaU9sLpCvhajUH"], bio: "ストリーマー部門所属。" },
-                { name: "Hesiko", role: "STREAMER", icon: "変", x: "https://x.com/hesikojonny", yt: "https://www.youtube.com/@%E3%81%B8%E3%81%97%E3%81%93%E3%83%AA%E3%83%89%E3%83%AB", twitch: "", clips: ["https://youtu.be/SA1DupCpAds?si=P1xg5HtdpSqJO2-6","https://youtu.be/FcFQwMT8Oug?si=LvJ0m7J-OnUiyN7X"], bio: "ストリーマー部門所属。" },
-                { name: "naohiro21", role: "STREAMER", icon: "脅", x: "https://x.com/naohiro21YT", yt: "https://www.youtube.com/@naohiro2121", twitch: "", clips: ["https://youtu.be/oc9yVryZllg?si=tOfw3fJZdR2GpQrp","https://youtu.be/c73gHnDzVa8?si=FEHDVJZL34D4p8dH","https://youtu.be/fOERJuX54xI?si=urrSa7x3tBG49ybi"], bio: "ストリーマー部門所属。" },
-                { name: "SqLA", role: "STREAMER", icon: "珍", x: "https://x.com/imsqla", yt: "https://www.youtube.com/@SqLA", twitch: "https://www.twitch.tv/sqla223/videos", clips: ["https://youtu.be/ed3SZ1mgOv0?si=V0PJhKEF9Ns8B-th"], bio: "ストリーマー部門所属。" },
-                { name: "aja", role: "STREAMER", icon: "飛", x: "https://x.com/ajak0n", yt: "https://www.youtube.com/@ajak0n", twitch: "https://www.twitch.tv/ajak0n", clips: ["https://youtu.be/6SLdkvEP-Hk?si=xFC6muSZ6eqx9iY7"], bio: "ストリーマー部門所属。" },
-                { name: "MARUTAKE", role: "STREAMER", icon: "短", x: "https://x.com/A_Marutake", yt: "https://www.youtube.com/@marutake7441", twitch: "https://www.twitch.tv/marutake_a", clips: ["https://youtube.com/shorts/TkmoYmRQbtU?si=wULlMi4jafovMMQk","https://youtu.be/ZwQOINbde28?si=Y4Y5pNw2fmI9fRrM"], bio: "ストリーマー部門所属。" },
-                { name: "らっしゃー", role: "STREAMER", icon: "顔", x: "https://x.com/rassya_taisyo", yt: "https://www.youtube.com/@rassyach", twitch: "https://www.twitch.tv/rassya12", clips: ["https://youtu.be/Wrrt0k3e_OA?si=S2xmbp7mMYRMLQLk","https://youtube.com/shorts/seV2WxZcHeQ?si=teB0zF2TplK5PTWE"], bio: "ストリーマー部門所属。" },
-                { name: "NiceWigg", role: "STREAMER", icon: "漢", x: "https://x.com/NiceWigg", yt: "https://www.youtube.com/@NiceWigg", twitch: "https://www.twitch.tv/nicewigg", clips: ["https://youtu.be/_wTI6T1kWRY?si=ytlHH0YOIxmUwrRx"], bio: "ストリーマー部門所属。" },
-                { name: "まろん", role: "STREAMER", icon: "才", x: "https://x.com/ridmaron", yt: "https://www.youtube.com/@Riddle_Maron", twitch: "https://www.twitch.tv/maronnv", clips: ["https://youtu.be/G6y2huZOoKo?si=C-R5NfVHYMo8uejW","https://youtu.be/-1nQUB4DRkQ?si=mLDQd44d5xxFXKFY"], bio: "ストリーマー部門所属。" },
-                { name: "けいき", role: "STREAMER", icon: "未", x: "https://x.com/keikiww", yt: "https://www.youtube.com/@keikich", twitch: "https://www.twitch.tv/keikich37564", clips: ["https://youtu.be/2Thn9r3CUoE?si=Um5JCUJjJh0hv8T5"], bio: "次世代のFortniteストリーマー。" }
+                { name: "vdk(ボドカ)", role: "OWNER", icon: 'images/vdk.jpg', x: "https://x.com/VodkaChaso", yt: "https://www.youtube.com/@vodkachaso", twitch: "https://twitch.tv/vodkavdk", clips: ["https://www.youtube.com/embed/qwtQ2T7G098","https://www.youtube.com/watch?v=tdPyYYMjMMQ&t=2460s","https://youtu.be/8u3OjjOnMdA?si=4Z8aNUEM2ljfsjJ3","https://www.youtube.com/shorts/yBGv_BruEY0"], bio: "RIDDLE ORDERのオーナー。元々はキレ芸で有名になったが、今はRiddleのプロシーンの活躍に涙する情の熱い漢。現在パパである。" },
+                { name: "しんじさん", role: "STREAMER", icon: "images/shinzi.jpg", x: "https://x.com/Shinjisan_XD", yt: "https://www.youtube.com/@shinji3XD", twitch: "https://www.twitch.tv/shinjifromjapanxd", clips: ["https://youtu.be/GuZdBoTBR_s?si=epGZBMqOmxNWKxs5","https://www.youtube.com/shorts/fN0gj8yQmmA","https://youtu.be/0wX6qvjZ-9E?si=YDk0gMB4yeEmjiDU"], bio: "自分の好きな様々なゲームをプレイし続けているが、ゲームが変わっても視聴者数を維持する真に魅力あるプレイヤー。かなりの分析家であり、猫愛好家。" },
+                { name: "ありけん", role: "STREAMER", icon: "images/ariken.png", x: "https://x.com/guraburuslot777", yt: "https://www.youtube.com/@arikenDB", twitch: "https://www.twitch.tv/arikendebu", clips: ["https://youtu.be/-Ouoararf6U?si=xHA8aahf_Ygif_ak","https://youtube.com/shorts/nYOtNBsAo08?si=68jsJL3xkmWT7NT9","https://youtu.be/FqUgILmcMCE?si=aqUescuinGgeoN7-"], bio: "一時はその見た目とそれっぽい解説でフォートナイト界に名を轟かし、約6万人まで同接を伸ばした才ある男。Riddleはフォートナイト部門で大きく知名度を上げたが、初期はRiddleの誘いを断っていたそうでRiddleやボドカとの関りは長いがRiddleに加入したのは2023年と遅めである。あるときからフォトナの配信に疲れたことで今は数字よりも自分の楽しさを求めて、配信余生を過ごしているように見える。" },
+                { name: "葉", role: "STREAMER", icon: "images/yoh.jpg", x: "https://x.com/yohdayo", yt: "https://www.youtube.com/@yohtubedayo", twitch: "https://www.twitch.tv/yohdazo", clips: ["https://youtube.com/shorts/oQHL1Qof8Ic?si=KfjhFGHAaG-XJl5l","https://youtu.be/zsd4A1MrEec?si=02bMFVf08lauevN5","https://youtu.be/JqIPdUv6TQ8?si=AQxamv3W1RqSgzzy"], bio: "今をトキメク配信者兼youtuber。彼女のGONと付き合い始めてから特に急成長しチャンネル登録者100万人を達成！配信をしながら企画動画も投稿し、新しいインフルエンサーの在り方を創造している新時代の配信者。Riddleの中では女性人気もあり、Riddleのイベントでは大体葉のファンガが多い。Riddle小会議？いや、葉のオフ会。活動初期はTikTokで動画を投稿。youtubeに動画があるが恥ずかしいのでここにリンクは貼らないでおく。", specialLinks: [ { title: "葉GONカップルチャンネル", url: "https://www.youtube.com/@yoh_gon" }, { title: "GONチャンネル", url: "https://www.youtube.com/@gon_vl" } ] },
+                { name: "YUKIO", role: "STREAMER", icon: "images/yukio.jpg", x: "https://x.com/YukioFPS", yt: "https://www.youtube.com/@YUKIOMELTDOWN", twitch: "https://www.twitch.tv/yukiofps14", clips: ["https://youtube.com/shorts/iVCS0Rvm-gk?si=ThFpon2FwJ0BmD6_","https://youtu.be/lBJ9maHihp4?si=fnbU53gvbLEfTs3G","https://youtu.be/HGbfEsPvv6E?si=eOgaU9sLpCvhajUH"], bio: "APEXプロの456としてRiddleに加入。456というのはYUKIO、Hesiko、naohiro21、あっしーの4人グループでRiddle加入前から組んでいたグループである。海外鯖でハイドしてプレデターを維持していたらCGZに勧誘され、CGZ加入後なぜか日韓1位の快挙を成し遂げた。まさに天才高校生。さらに天才であるだけでなく、その時代のプロとしては珍しく配信にも力を入れておりAPEXプロシーンを人気にした人物といっても過言ではない。現在はYAUZI OKANO、配信者として配信を盛り上げている。" },
+                { name: "Hesiko", role: "STREAMER", icon: "images/hesiko.jpg", x: "https://x.com/hesikojonny", yt: "https://www.youtube.com/@%E3%81%B8%E3%81%97%E3%81%93%E3%83%AA%E3%83%89%E3%83%AB", twitch: "", clips: ["https://youtu.be/SA1DupCpAds?si=P1xg5HtdpSqJO2-6","https://youtu.be/FcFQwMT8Oug?si=LvJ0m7J-OnUiyN7X"], bio: "APEXプロの456としてRiddleに加入。456の1人、Hesiko。海外鯖でハイドしてプレデターを維持していたらCGZに勧誘され、CGZ加入後なぜか日韓1位の快挙を成し遂げた。天才高校生の。プロシーンでのHesikoの非常にwellでスマートな行動は特に人気があった。顔がよく女性人気もある。現在は配信者として活躍し、456の中では唯一まだAPEXを続けENCで456le Orderとしてまた一つ歴史を刻んだ。" },
+                { name: "naohiro21", role: "STREAMER", icon: "images/naohiro21.png", x: "https://x.com/naohiro21YT", yt: "https://www.youtube.com/@naohiro2121", twitch: "", clips: ["https://youtu.be/oc9yVryZllg?si=tOfw3fJZdR2GpQrp","https://youtu.be/c73gHnDzVa8?si=FEHDVJZL34D4p8dH","https://youtu.be/fOERJuX54xI?si=urrSa7x3tBG49ybi"], bio: "APEXプロの456としてRiddleに加入。456の1人、Hesiko。海外鯖でハイドしてプレデターを維持していたらCGZに勧誘され、CGZ加入後なぜか日韓1位の快挙を成し遂げた。天才高校生。生粋のエイマー。456の中でいち早くプロを引退し、「とんずらした」と発言している。まだ活躍できる余地があったり、YUKIOやHesikoにも引退を止められたりした中でやめたのでガチのとんずらである。しかし、特徴的な性格や驚異的な行動から人気が高く、VCRやVtuver配信、CRカップでは高い同接がうかがえる。本気を出せば配信者の頂点を狙える脅威の子。" },
+                { name: "SqLA", role: "STREAMER", icon: "images/sqla.jpg", x: "https://x.com/imsqla", yt: "https://www.youtube.com/@SqLA", twitch: "https://www.twitch.tv/sqla223/videos", clips: ["https://youtu.be/ed3SZ1mgOv0?si=V0PJhKEF9Ns8B-th"], bio: "顔よりもあそこが先に公開されたピンクのばけもの。Riddleストリーマー部門初のメンバーである。Rasや様々な人の似てないそれっぽいモノマネで人気を上げ、現在は雑談動画が特に人気である。ロリポん、くぅらりーあずるといったリア友や、Arisaka、紫宮るな、urukaとの誇張界隈がよく話題になる。なんとYOASOBIのAyaseからの認知があり、自称紅白出場経験あり。" },
+                { name: "aja", role: "STREAMER", icon: "images/aja.png", x: "https://x.com/ajak0n", yt: "https://www.youtube.com/@ajak0n", twitch: "https://www.twitch.tv/ajak0n", clips: ["https://youtu.be/6SLdkvEP-Hk?si=xFC6muSZ6eqx9iY7"], bio: "プロにならない最強VALOプレイヤー。" },
+                { name: "MARUTAKE", role: "STREAMER", icon: "images/marutake.jpg", x: "https://x.com/A_Marutake", yt: "https://www.youtube.com/@marutake7441", twitch: "https://www.twitch.tv/marutake_a", clips: ["https://youtube.com/shorts/TkmoYmRQbtU?si=wULlMi4jafovMMQk","https://youtu.be/ZwQOINbde28?si=Y4Y5pNw2fmI9fRrM"], bio: "youtubeショートの人として人気があるが、あまりショートの人と言われたくないよう。しかし、顔出しをしたり、髪を奇抜にしたりとショートを頑張っている。" },
+                { name: "らっしゃー", role: "STREAMER", icon: "images/rassya.png", x: "https://x.com/rassya_taisyo", yt: "https://www.youtube.com/@rassyach", twitch: "https://www.twitch.tv/rassya12", clips: ["https://youtu.be/Wrrt0k3e_OA?si=S2xmbp7mMYRMLQLk","https://youtube.com/shorts/seV2WxZcHeQ?si=teB0zF2TplK5PTWE"], bio: "釈迦が去った後のAVAの日本1位を獲った凄くないようで凄いプレイヤー。実写を活かした大きなリアクションが人気。愛されキャラである。" },
+                { name: "NiceWigg", role: "STREAMER", icon: "images/nicewigg.jpg", x: "https://x.com/NiceWigg", yt: "https://www.youtube.com/@NiceWigg", twitch: "https://www.twitch.tv/nicewigg", clips: ["https://youtu.be/_wTI6T1kWRY?si=ytlHH0YOIxmUwrRx"], bio: "世界のAPEX配信者と言えばNiceWigg。100Thievesの共同オーナーであり、APEX初期からChampionship札幌大会まで幅広くAPEX界隈を盛り上げている。" },
+                { name: "まろん", role: "STREAMER", icon: "images/maron.jpg", x: "https://x.com/ridmaron", yt: "https://www.youtube.com/@Riddle_Maron", twitch: "https://www.twitch.tv/maronnv", clips: ["https://youtu.be/G6y2huZOoKo?si=C-R5NfVHYMo8uejW","https://youtu.be/-1nQUB4DRkQ?si=mLDQd44d5xxFXKFY"], bio: "ストリーマー部門でありながらMetorにレンタル移籍しプロシーンでも活躍している。大会では初プロでもダメージランキングに名前を載せ、ランクだけではなくプロとしても活躍できる強さを持っている。Padプレイヤーであるが他にはいないほどの綺麗なエイムと死なない立ち回り、ファイトでの立ち位置が完璧である。" },
+                { name: "けいき", role: "STREAMER", icon: "images/keiki.jpg", x: "https://x.com/keikiww", yt: "https://www.youtube.com/@keikich", twitch: "https://www.twitch.tv/keikich37564", clips: ["https://www.youtube.com/watch?v=JKezSWEXPsk"], bio: "次世代のFortniteストリーマー。フォートナイト部門riseと仲が良く、小さい頃から動画投稿を続けている。これからの動向が気になる人物である。" }
             ],
             'tab-creator': [
-                { name: "まうふぃん(Maufin)", role: "CONTENT CREATOR", icon: "神", x: "https://x.com/Maufinfn", yt: "https://www.youtube.com/@Maufin", twitch: "https://www.twitch.tv/maufinvl", clips: ["https://youtu.be/4jWq-3Ov13o?si=5m3pAWHLd5gJjQBy","https://youtu.be/5AAH3B5jHa4?si=rKy4bJTpZ5CzF4ZU"], bio: "FORTNITE界のレジェンドであり、VALORANT部門も経験。" },
-                { name: "ふぁいあー(Fire)", role: "CONTENT CREATOR", icon: "火", x: "https://x.com/firedesuo_O", yt: "https://www.youtube.com/@firedesu", twitch: "https://www.twitch.tv/firedesu7", clips: [], bio: "FORTNITE部門から転向。" }
+                { name: "まうふぃん(Maufin)", role: "CONTENT CREATOR", icon: "images/maufin.jpg", x: "https://x.com/Maufinfn", yt: "https://www.youtube.com/@Maufin", twitch: "https://www.twitch.tv/maufinvl", clips: ["https://www.youtube.com/watch?v=RnnFXl901SU","https://youtu.be/4jWq-3Ov13o?si=5m3pAWHLd5gJjQBy","https://youtu.be/5AAH3B5jHa4?si=rKy4bJTpZ5CzF4ZU"], bio: "FORTNITE界のレジェンドであり、VALORANT部門も経験。Riddleの歴史を作った1人。" },
+                { name: "ふぁいあー(Fire)", role: "CONTENT CREATOR", icon: "images/fire.jpg", x: "https://x.com/firedesuo_O", yt: "https://www.youtube.com/@firedesu", twitch: "https://www.twitch.tv/firedesu7", clips: [], bio: "FORTNITE部門から転向。" }
             ],
             'tab-apex': [
                 { name: "Meltstera", role: "Pro / APEX", icon: "M", x: "https://x.com/Meltstera", yt: "https://www.youtube.com/@Meltstera", twitch: "https://www.twitch.tv/meltstera", clips: ["https://youtu.be/HD9eIqIqZgk?si=J_WJpv715RgMnrLC"], bio: "APEX部門選手。" },
@@ -306,10 +303,10 @@
                 { name: "kamaneko", role: "Pro / APEX", icon: "k", x: "https://x.com/hironeko", yt: "https://www.youtube.com/@%E3%81%8B%E3%81%BE%E3%81%AD%E3%81%93-h4y", twitch: "https://www.twitch.tv/kamaneko0_0", clips: [], bio: "APEX部門選手。" },
                 { name: "あっしー", role: "Assistant", icon: "あ", x: "https://x.com/4ssiikun", yt: "https://www.youtube.com/@4ssiikun", twitch: "https://www.twitch.tv/assiikun", clips: ["https://youtu.be/4KPv-QYtnP8?si=dLPUcSOt6HO7Ecdd","https://youtu.be/pCwpOha-LLg?si=FAomdnPjBnFCPHTe","https://youtu.be/MpquwfsZdmI?si=OiOW3kS9bmaOJkO4"], bio: "APEX部門アシスタント/マネージャー。" },
                 { name: "Akabeko", role: "Coach", icon: "A", x: "", yt: "", twitch: "https://x.com/akbkanalyst", clips: [], bio: "APEX部門コーチ。" },
-                { name: "ぱるぶす", role: "PUV Character", icon: "ぱ", x: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99%E4%BA%BA%E5%BD%A22025%E3%83%A6%E3%83%8B%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0ver", yt: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99-%E3%83%A9%E3%83%90%E3%83%BC%E3%82%AD%E3%83%BC%E3%83%9B%E3%83%AB%E3%83%80%E3%83%BC", twitch: "https://shop.riddle.info/", clips: ["https://x.com/pulvess/status/1849752849863118938"], bio: " 非・公式マスコット。" }
+                { name: "ぱるぶす", role: "PUV Character", icon: "images/pulv.jpg", x: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99%E4%BA%BA%E5%BD%A22025%E3%83%A6%E3%83%8B%E3%83%95%E3%82%A9%E3%83%BC%E3%83%A0ver", yt: "https://shop.riddle.info/products/%E3%81%B1%E3%82%8B%E3%81%B6%E3%81%99-%E3%83%A9%E3%83%90%E3%83%BC%E3%82%AD%E3%83%BC%E3%83%9B%E3%83%AB%E3%83%80%E3%83%BC", twitch: "https://shop.riddle.info/", clips: ["https://x.com/pulvess/status/1849752849863118938"], bio: " 非・公式マスコット。" }
             ],
             'tab-valo': [
-                { name: "Seoldam", role: "Pro / VALO", icon: "S", x: "https://x.com/SeoldamTwit", yt: "https://www.youtube.com/@riddleseoldam397", twitch: "", clips: ["https://youtu.be/iYmCNw0XNfY?si=qfCbH1UtdRdhKXio","https://youtu.be/JmGTOk41Zi8?si=cC_08qk9Ym5Wq9s0"], bio: "Korean Jettとして知られる圧倒的フィジカルを持つプレイヤー。" },
+                { name: "Seoldam", role: "Pro / VALO", icon: "images/seoldom.jpg", x: "https://x.com/SeoldamTwit", yt: "https://www.youtube.com/@riddleseoldam397", twitch: "", clips: ["https://youtu.be/iYmCNw0XNfY?si=qfCbH1UtdRdhKXio","https://youtu.be/JmGTOk41Zi8?si=cC_08qk9Ym5Wq9s0"], bio: "Korean Jettとして知られる圧倒的フィジカルを持つプレイヤー。" },
                 { name: "JoXJo", role: "Pro / VALO", icon: "J", x: "https://x.com/JoXJo_by", yt: "", twitch: "", clips: [], bio: "名IGLとして知られる頭脳派プレイヤー。" },
                 { name: "Minty", role: "Pro / VALO", icon: "M", x: "https://x.com/MintyVL", yt: "https://www.youtube.com/@Mintych", twitch: "https://www.twitch.tv/mintyjp", clips: [], bio: "高いエイム力を誇るプレイヤー。" },
                 { name: "gyen", role: "Pro / VALO", icon: "g", x: "https://x.com/gyen_ow", yt: "https://www.youtube.com/@gyenow/videos", twitch: "https://www.twitch.tv/gyenow", clips: [], bio: "VALORANT部門の新星。" },
@@ -318,14 +315,14 @@
                 { name: "mun", role: "Coach", icon: "m", x: "https://x.com/mun_fps", yt: "", twitch: "", clips: [], bio: "VALORANT部門コーチ。" }
             ],
             'tab-sf': [
-                { name: "高木", role: "Pro / SF6", icon: "高", x: "https://x.com/Takagi_Progamer", yt: "https://www.youtube.com/@takagikirinukidouga", twitch: "https://www.twitch.tv/takagitv", clips: ["https://www.youtube.com/watch?v=z0o8mzgScX0&list=RDz0o8mzgScX0&start_radio=1"], bio: "ストリーマー部門から転向し、SFL JPに挑戦。" },
+                { name: "高木", role: "Pro / SF6", icon: "images/takagi.png", x: "https://x.com/Takagi_Progamer", yt: "https://www.youtube.com/@takagikirinukidouga", twitch: "https://www.twitch.tv/takagitv", clips: ["https://www.youtube.com/watch?v=z0o8mzgScX0&list=RDz0o8mzgScX0&start_radio=1"], bio: "ストリーマー部門から転向し、SFL JPに挑戦。" },
                 { name: "あでりい", role: "Pro / SF6", icon: "あ", x: "https://x.com/adelie54", yt: "", twitch: "https://www.twitch.tv/adelie54", clips: [], bio: "ストリートファイターリーグ: Pro-JPロスター。" },
                 { name: "Jr.", role: "Pro / SF6", icon: "J", x: "https://x.com/juniorchaaaan", yt: "", twitch: "https://www.twitch.tv/juniorzangief", clips: [], bio: "ストリートファイターリーグ: Pro-JPロスター。" },
                 { name: "ひかる", role: "Pro / SF6", icon: "ひ", x: "https://x.com/hikaru_shiftne", yt: "https://www.youtube.com/@hikaru_shiftne", twitch: "https://www.twitch.tv/hikaru_shiftne", clips: [], bio: "ZETA DIVISIONから移籍。" },
                 { name: "重松", role: "Pro / SF6", icon: "重", x: "https://x.com/yukariblanka", yt: "", twitch: "https://www.twitch.tv/shigematsu_sf6", clips: [], bio: "以前は「ゆかりさん（Yukadon）」として活動。" }
             ],
             'tab-fortnite': [
-                { name: "りせ", role: "Pro / FORTNITE", icon: "り", x: "https://x.com/RiseGotGamer", yt: "https://www.youtube.com/@risegotgamer", twitch: "https://www.twitch.tv/r1selll", clips: [], bio: "FORTNITE部門。" }
+                { name: "りせ", role: "Pro / FORTNITE", icon: "images/rise.png", x: "https://x.com/RiseGotGamer", yt: "https://www.youtube.com/@risegotgamer", twitch: "https://www.twitch.tv/r1selll", clips: [], bio: "FORTNITE部門。" }
             ],
             'tab-shadow': [
                 { name: "折り紙", role: "Pro / Shadowverse", icon: "折", x: "https://x.com/Origami_sv", yt: "https://www.youtube.com/channel/UCSrjfKnHpvKvRa8Ag8ZE2kg", twitch: "https://www.twitch.tv/origamisv/", clips: [], bio: "Shadowverse Premier Series参戦メンバー。" },
@@ -353,7 +350,8 @@
             let className = isModal ? 'modal-header-icon' : 'member-icon';
             if (!iconData) iconData = "?";
             
-            if (iconData.startsWith('http')) {
+            // ★ローカル画像（images/など）や.jpg/.pngに対応するよう条件を拡張
+            if (iconData.startsWith('http') || iconData.startsWith('images/') || iconData.includes('.jpg') || iconData.includes('.png')) {
                 return `<div class="${className}" style="background-image: url('${iconData}'); background-color: transparent;"></div>`;
             } else {
                 return `<div class="${className}">${iconData}</div>`;
@@ -458,21 +456,24 @@
             scene.add(group);
         });
 
-        const BUBBLE_COLORS = [0xffe600, 0x111111, 0x0055ff];
+        // ★シャボン玉の色循環を配列で設定
+        const BUBBLE_COLORS = [0x0055ff, 0xffe600, 0x111111]; // 青、黄、黒
         for (let i = 0; i < 20; i++) { 
             const mat = simpleBubbleMaterial.clone();
-            mat.color.setHex(BUBBLE_COLORS[Math.floor(Math.random() * BUBBLE_COLORS.length)]);
+            const initialColorIndex = Math.floor(Math.random() * BUBBLE_COLORS.length);
+            mat.color.setHex(BUBBLE_COLORS[initialColorIndex]);
             const size = Math.random() * 1.5 + 0.5;
             const geo = new THREE.SphereGeometry(size, 32, 32); 
             const mesh = new THREE.Mesh(geo, mat); 
             mesh.position.set((Math.random() - 0.5) * 35, (Math.random() - 0.5) * 25, (Math.random() * -15) - 5);
             
-            // ★ホバーエフェクト復活のため、元の色などを userData に保存
+            // ★ ホバーエフェクトと色保持のためのデータをuserDataに保存
             mesh.userData = { 
                 lastSplitTime: 0, 
                 isHoverable: true, 
-                originalColor: mat.color.getHex(),
+                colorIndex: initialColorIndex, // 現在の色のインデックス
                 isHovered: false,
+                wasHovered: false,             // 前回触れていたかどうか
                 targetScale: 1.0
             };
             
@@ -760,7 +761,7 @@
             }
         };
 
-        // ★ ホバーエフェクト処理の復活
+        // ★ ホバーエフェクト処理の変更（色は維持され、次に触れると変わる）
         window.addEventListener('mousemove', (e) => {
             const trail = document.createElement('div');
             trail.className = 'cursor-trail'; trail.style.left = e.clientX + 'px'; trail.style.top = e.clientY + 'px';
@@ -780,7 +781,6 @@
                 else { targetScale = 1.0; targetRotX = 0; targetRotY = Math.PI * 2; }
             }
             
-            // ★ シャボン玉のホバー判定と色変更
             const intersects = raycaster.intersectObjects([...clickableObjects, ...decorativeMeshes]);
             
             // 一旦すべての装飾用シャボン玉のホバー状態をリセット
@@ -799,10 +799,22 @@
                 if (hitObj.userData.isHoverable) {
                     hitObj.userData.isHovered = true;
                     hitObj.userData.targetScale = 1.3; // ホバーで少し大きく
-                    hitObj.material.color.setHex(0xffffff); // ホバー中は白っぽく光る
+                    
+                    // ★ 新たに触れた瞬間だけ色を順番に切り替える（離れるまで連続で変わらないようにする）
+                    if (!hitObj.userData.wasHovered) {
+                        hitObj.userData.colorIndex = (hitObj.userData.colorIndex + 1) % BUBBLE_COLORS.length;
+                        hitObj.material.color.setHex(BUBBLE_COLORS[hitObj.userData.colorIndex]);
+                    }
                     hitObj.material.opacity = 1.0;
                 }
             }
+            
+            // 次回の「新たに触れた」判定のために状態を保存
+            decorativeMeshes.forEach(mesh => {
+                if (mesh.userData.isHoverable) {
+                    mesh.userData.wasHovered = mesh.userData.isHovered;
+                }
+            });
             
             renderer.domElement.style.cursor = isHoveringSomething ? 'pointer' : 'default';
         });
@@ -835,40 +847,39 @@
             
             floatingBubbles.forEach((bubble) => {
                 if (bubble.mat) {
-                    // ★ ホバーされていないシャボン玉の色とサイズを元に戻すアニメーション
                     if (bubble.mesh.userData.isHoverable) {
-                        if (!bubble.mesh.userData.isHovered) {
-                            bubble.mat.color.setHex(bubble.mesh.userData.originalColor);
-                        }
+                        // 色を元に戻す処理は削除（一度変わったらそのまま維持させるため）
+                        
                         // スケールを滑らかに変化
                         const currentScale = bubble.mesh.scale.x;
                         const tScale = bubble.mesh.userData.targetScale;
                         const newScale = currentScale + (tScale - currentScale) * 0.1;
                         bubble.mesh.scale.set(newScale, newScale, newScale);
+                        
+                        // ホバーが外れたら透明度だけ元に戻す（色はそのまま）
+                        if (!bubble.mesh.userData.isHovered) {
+                            bubble.mat.opacity = visualConfig.bubbleOpacity; 
+                        }
+                        bubble.mat.needsUpdate = true;
+                        bubble.mesh.visible = visualConfig.bubbleOpacity > 0.01;
                     }
                     
-                    if (!bubble.mesh.userData.isHovered) {
-                        bubble.mat.opacity = visualConfig.bubbleOpacity; 
+                    if (bubble.mesh.userData && bubble.mesh.userData.isClickable) {
+                        if (bubble.initialY === undefined) { 
+                            bubble.initialY = bubble.mesh.position.y; 
+                            bubble.initialX = bubble.mesh.position.x; 
+                        }
+                        bubble.mesh.position.y = bubble.initialY + Math.sin(time * 2 + bubble.offsetX) * 0.5;
+                        bubble.mesh.position.x = bubble.initialX + Math.cos(time * 1.5 + bubble.offsetX) * 0.5;
+                        
+                        if (bubble.mesh.children.length > 1) {
+                            bubble.mesh.children[1].lookAt(camera.position);
+                        }
+                    } else {
+                        bubble.mesh.position.y += bubble.speedY; 
+                        bubble.mesh.position.x += Math.sin(time + bubble.offsetX) * 0.01;
+                        if (bubble.mesh.position.y > 15) bubble.mesh.position.y = -15;
                     }
-                    bubble.mat.needsUpdate = true;
-                    bubble.mesh.visible = visualConfig.bubbleOpacity > 0.01;
-                }
-                
-                if (bubble.mesh.userData && bubble.mesh.userData.isClickable) {
-                    if (bubble.initialY === undefined) { 
-                        bubble.initialY = bubble.mesh.position.y; 
-                        bubble.initialX = bubble.mesh.position.x; 
-                    }
-                    bubble.mesh.position.y = bubble.initialY + Math.sin(time * 2 + bubble.offsetX) * 0.5;
-                    bubble.mesh.position.x = bubble.initialX + Math.cos(time * 1.5 + bubble.offsetX) * 0.5;
-                    
-                    if (bubble.mesh.children.length > 1) {
-                        bubble.mesh.children[1].lookAt(camera.position);
-                    }
-                } else {
-                    bubble.mesh.position.y += bubble.speedY; 
-                    bubble.mesh.position.x += Math.sin(time + bubble.offsetX) * 0.01;
-                    if (bubble.mesh.position.y > 15) bubble.mesh.position.y = -15;
                 }
             });
             renderer.render(scene, camera);
