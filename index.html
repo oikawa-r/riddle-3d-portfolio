@@ -10,8 +10,9 @@
     <meta name="description" content="プロゲーミングチーム「Riddle Order」のファンサイトです。">
     
     <!-- ▼ 検索キーワード（現在はGoogleはあまり重視しませんが念のため） -->
-    <meta name="keywords" content="Riddle, Riddle Order, ボドカ, リドル, 葉, apex, APEX, valo, valorant, ストリーマー, プロゲーマー, ファンサイト, esport, vdk, streamer, ゲーム">
+    <meta name="keywords" content="Riddle, Riddle Order, ボドカ, リドル, 葉, apex, valorant, ストリーマー, プロゲーマー, ファンサイト, esport, vdk, streamer, ゲーム">
     <link rel="icon" href="images/Riddle.jpg">
+    
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -34,61 +35,62 @@
     </script>
     
     <style>
-        body { margin: 0; overflow: hidden; background-color: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        body { margin: 0; overflow: hidden; background-color: #ffffff; font-family: 'Helvetica Neue', Arial, sans-serif; overscroll-behavior-y: none; }
         canvas { position: fixed !important; top: 0; left: 0; z-index: -1; }
         
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #111; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; transition: opacity 0.5s ease; }
-        #loading-text { font-size: 2rem; font-weight: 900; letter-spacing: 5px; margin-bottom: 20px; color: #ffe600; }
-        .progress-container { width: 300px; height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
+        /* vh を dvh (Dynamic Viewport Height) に変更し、スマホのアドレスバー問題に対策 */
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: #111; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; transition: opacity 0.5s ease; }
+        #loading-text { font-size: 2rem; font-weight: 900; letter-spacing: 5px; margin-bottom: 20px; color: #ffe600; text-align: center; }
+        .progress-container { width: 80%; max-width: 300px; height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
         #progress-bar { width: 0%; height: 100%; background: #ffe600; transition: width 0.2s ease; }
 
-        #scroll-proxy { position: absolute; top: 0; left: 0; width: 100%; height: 500vh; z-index: 0; display: none; }
-        header { position: fixed; top: 0; left: 0; width: 100%; padding: 30px 0; z-index: 100; display: flex; justify-content: center; gap: 20px; pointer-events: none; }
+        #scroll-proxy { position: absolute; top: 0; left: 0; width: 100%; height: 500dvh; z-index: 0; display: none; }
+        header { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 10px; box-sizing: border-box; z-index: 100; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; pointer-events: none; }
         .tab-button { pointer-events: auto; background: rgba(0, 0, 0, 0.7); color: #ffffff; border: 2px solid #ffe600; padding: 10px 25px; border-radius: 30px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; backdrop-filter: blur(5px); }
         .tab-button:hover { background: #ffe600; color: #000000; box-shadow: 0 0 15px rgba(255, 230, 0, 0.8); transform: translateY(-2px); }
-        .ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; pointer-events: none; opacity: 0; box-sizing: border-box; padding: 80px 20px; }
+        .ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; pointer-events: none; opacity: 0; box-sizing: border-box; padding: 80px 20px 20px 20px; }
         
         #hero { opacity: 1; pointer-events: auto; }
-        #description { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); text-align: center; transition: opacity 1s ease-in-out; width: 100%; }
+        #description { position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; transition: opacity 1s ease-in-out; width: 90%; max-width: 600px; }
         #description h2 { font-size: 3rem; margin-bottom: 10px; letter-spacing: 4px; font-weight: 900; color: #ffffff; -webkit-text-stroke: 1px #000000; text-shadow: 3px 3px 0px #000000; }
         #description p { font-size: 1.1rem; line-height: 1.8; letter-spacing: 2px; color: #ffffff; font-weight: bold; -webkit-text-stroke: 0.5px #000000; text-shadow: 2px 2px 0px #000000; }
         
         .cursor-trail { position: fixed; width: 20px; height: 20px; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: multiply; filter: blur(2px); }
 
-        .dept-bg { position: absolute; left: 2%; top: 50%; transform: translateY(-50%); width: 45vw; height: 80vh; background-size: contain; background-repeat: no-repeat; background-position: left center; opacity: 0; z-index: 0; pointer-events: none; transition: opacity 0.5s, background-image 0.5s ease-in-out; }
+        .dept-bg { position: absolute; left: 2%; top: 50%; transform: translateY(-50%); width: 45vw; height: 80dvh; background-size: contain; background-repeat: no-repeat; background-position: left center; opacity: 0; z-index: 0; pointer-events: none; transition: opacity 0.5s, background-image 0.5s ease-in-out; }
         
-        #category-selection { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1100px; width: 100%; pointer-events: auto; position: relative; z-index: 999; }
+        #category-selection { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1100px; width: 100%; pointer-events: auto; position: relative; z-index: 999; }
         .category-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; pointer-events: auto; }
         .category-image { width: 220px; height: 124px; border-radius: 8px; border: 3px solid #000; outline: 2px solid #ffe600; outline-offset: -1px; background-size: cover; background-position: center; box-shadow: 6px 6px 0px rgba(0,0,0,0.8); transition: transform 0.3s ease, outline-offset 0.3s ease; pointer-events: none; }
-        .category-tab { background: #111; color: #fff; border: 2px solid #333; padding: 8px 24px; border-radius: 30px; font-weight: bold; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: 1px; pointer-events: none; }
+        .category-tab { background: #111; color: #fff; border: 2px solid #333; padding: 8px 24px; border-radius: 30px; font-weight: bold; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: 1px; pointer-events: none; text-align: center; }
         .category-item:hover .category-image { transform: scale(1.05); outline-offset: 2px; }
         .category-item:hover .category-tab { background: #ffe600; color: #000; border-color: #ffe600; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(255, 230, 0, 0.5); }
 
-        #member-details { display: none; flex-direction: column; align-items: center; width: 100%; z-index: 2; }
-        .back-btn { pointer-events: auto; background: #000; color: #fff; border: 2px solid #333; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-bottom: 20px; transition: all 0.3s; letter-spacing: 1px; }
+        #member-details { display: none; flex-direction: column; align-items: center; width: 100%; z-index: 2; height: 100%; justify-content: center; }
+        .back-btn { pointer-events: auto; background: #000; color: #fff; border: 2px solid #333; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-bottom: 15px; transition: all 0.3s; letter-spacing: 1px; }
         .back-btn:hover { background: #ffe600; color: #000; border-color: #ffe600; }
 
-        .member-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; pointer-events: auto; }
+        .member-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 15px; pointer-events: auto; }
         .m-tab { background: #111; color: #fff; border: 2px solid #333; padding: 8px 16px; border-radius: 30px; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; }
-        .m-tab.active, .m-tab:hover { background: #ffe600; color: #000; border-color: #ffe600; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 230, 0, 0.4); }
+        .m-tab.active, .m-tab:hover { background: #ffe600; color: #000; border-color: #ffe600; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 230, 0, 0.4); }
         
-        .member-content-wrapper { position: relative; width: 100%; max-width: 1100px; height: 50vh; overflow-y: auto; overflow-x: hidden; padding: 10px; pointer-events: auto; }
-        .member-content-wrapper::-webkit-scrollbar { width: 8px; }
+        .member-content-wrapper { position: relative; width: 100%; max-width: 1100px; height: 60dvh; overflow-y: auto; overflow-x: hidden; padding: 10px; pointer-events: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
+        .member-content-wrapper::-webkit-scrollbar { width: 6px; }
         .member-content-wrapper::-webkit-scrollbar-thumb { background: #ffe600; border-radius: 4px; }
         .member-content-wrapper::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
 
-        .member-panel { display: none; gap: 30px; flex-wrap: wrap; justify-content: center; width: 100%; }
+        .member-panel { display: none; gap: 20px; flex-wrap: wrap; justify-content: center; width: 100%; padding-bottom: 20px; }
         .member-panel.active-panel { display: flex; }
         
         .member-card { 
-            width: 220px; background: rgba(255,255,255,0.95); border: 2px solid #000; 
-            border-radius: 12px; padding: 20px; text-align: center; box-shadow: 6px 6px 0px #ffe600; 
+            width: 200px; background: rgba(255,255,255,0.95); border: 2px solid #000; 
+            border-radius: 12px; padding: 15px; text-align: center; box-shadow: 6px 6px 0px #ffe600; 
             transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, border-color 0.3s ease; 
-            cursor: pointer; opacity: 0; position: relative; overflow: hidden; 
+            cursor: pointer; opacity: 0; position: relative; overflow: hidden; box-sizing: border-box;
         }
         .member-card:hover { 
-            transform: scale(1.08) translateY(-8px) !important; 
-            box-shadow: 0 15px 30px rgba(255, 230, 0, 0.6), 0 0 15px rgba(255, 230, 0, 0.8) inset !important; 
+            transform: scale(1.05) translateY(-5px) !important; 
+            box-shadow: 0 10px 20px rgba(255, 230, 0, 0.6), 0 0 10px rgba(255, 230, 0, 0.8) inset !important; 
             border-color: #ffe600 !important; 
             z-index: 10; 
         }
@@ -100,49 +102,49 @@
         .member-card:hover::after { transform: rotate(45deg) translate(100%, 100%); }
         
         .member-icon { 
-            width: 90px; height: 90px; background-color: #ffe600; color: #000; 
+            width: 80px; height: 80px; background-color: #ffe600; color: #000; 
             display: flex; justify-content: center; align-items: center; 
-            font-size: 2.5rem; font-weight: 900; 
+            font-size: 2rem; font-weight: 900; 
             background-size: cover; background-position: center; border-radius: 50%; 
-            margin: 0 auto 15px auto; border: 2px solid #000; pointer-events: none; 
+            margin: 0 auto 10px auto; border: 2px solid #000; pointer-events: none; 
             overflow: hidden;
         }
         
-        .member-name { margin: 0 0 5px 0; font-size: 1.3rem; font-weight: 900; pointer-events: none; }
-        .member-role { margin: 0; color: #666; font-weight: bold; font-size: 0.85rem; pointer-events: none; }
+        .member-name { margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 900; pointer-events: none; }
+        .member-role { margin: 0; color: #666; font-weight: bold; font-size: 0.8rem; pointer-events: none; }
 
-        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; justify-content: center; align-items: center; opacity: 0; pointer-events: auto; }
-        .modal-content { background: #111; width: 90%; max-width: 700px; border: 2px solid #ffe600; border-radius: 15px; padding: 30px; box-shadow: 0 0 30px rgba(255, 230, 0, 0.3); color: #fff; position: relative; max-height: 90vh; overflow-y: auto; }
-        .modal-content::-webkit-scrollbar { width: 8px; }
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; justify-content: center; align-items: center; opacity: 0; pointer-events: auto; }
+        .modal-content { background: #111; width: 90%; max-width: 600px; border: 2px solid #ffe600; border-radius: 15px; padding: 25px; box-shadow: 0 0 30px rgba(255, 230, 0, 0.3); color: #fff; position: relative; max-height: 85dvh; overflow-y: auto; box-sizing: border-box; -webkit-overflow-scrolling: touch; }
+        .modal-content::-webkit-scrollbar { width: 6px; }
         .modal-content::-webkit-scrollbar-thumb { background: #ffe600; border-radius: 4px; }
         
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 2rem; font-weight: bold; color: #666; cursor: pointer; transition: color 0.3s; z-index: 1000; }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 2rem; font-weight: bold; color: #666; cursor: pointer; transition: color 0.3s; z-index: 1000; }
         .close-btn:hover { color: #ffe600; }
         
-        .modal-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; padding-bottom: 0; border-bottom: none; }
+        .modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
         
         .modal-header-icon { 
-            width: 80px; height: 80px; background-color: #ffe600; color: #000; 
+            width: 70px; height: 70px; background-color: #ffe600; color: #000; 
             display: flex; justify-content: center; align-items: center; 
-            font-size: 2.5rem; font-weight: 900; 
+            font-size: 2rem; font-weight: 900; 
             border-radius: 50%; border: 2px solid #ffe600; background-size: cover; background-position: center; flex-shrink: 0; 
             overflow: hidden;
         }
         
-        .modal-header-info h2 { margin: 0 0 5px 0; font-size: 2rem; letter-spacing: 1px; word-break: break-word; }
-        .modal-header-info p { margin: 0; color: #999; font-weight: bold; font-size: 0.9rem; }
+        .modal-header-info h2 { margin: 0 0 5px 0; font-size: 1.6rem; letter-spacing: 1px; word-break: break-word; line-height: 1.2; }
+        .modal-header-info p { margin: 0; color: #999; font-weight: bold; font-size: 0.85rem; }
         
-        .social-links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #333; }
-        .social-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #444; transition: all 0.2s; white-space: nowrap; }
-        .social-btn i { font-size: 1.1rem; }
+        .social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
+        .social-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #444; transition: all 0.2s; white-space: nowrap; }
+        .social-btn i { font-size: 1rem; }
         .social-btn.yt:hover { background: #FF0000; border-color: #FF0000; }
         .social-btn.tw:hover { background: #9146FF; border-color: #9146FF; }
         .social-btn.x:hover { background: #000; border-color: #fff; }
         .social-btn.shop:hover { background: #ffe600; color: #000; border-color: #ffe600; }
 
-        .modal-bio { line-height: 1.8; font-size: 0.95rem; color: #ddd; background: #1a1a1a; padding: 20px; border-radius: 8px; border-left: 4px solid #ffe600; margin-bottom: 20px; }
+        .modal-bio { line-height: 1.8; font-size: 0.9rem; color: #ddd; background: #1a1a1a; padding: 15px; border-radius: 8px; border-left: 4px solid #ffe600; margin-bottom: 20px; }
 
-        #modal-video-wrapper { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        #modal-video-wrapper { display: flex; flex-direction: column; gap: 15px; margin-bottom: 10px; }
         .modal-video-item { width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 8px; overflow: hidden; border: 1px solid #333; }
         .modal-video-item iframe { width: 100%; height: 100%; border: none; }
         
@@ -150,10 +152,10 @@
         
         .amu-stamp {
             position: absolute;
-            top: 25px;
-            right: 80px; 
-            width: 70px;
-            height: 70px;
+            top: 15px;
+            right: 60px; 
+            width: 50px;
+            height: 50px;
             background-color: #fff;
             border-radius: 50%;
             border: 3px solid #ffe600;
@@ -161,23 +163,53 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.2rem;
+            font-size: 1.5rem;
             z-index: 1001;
             pointer-events: none; 
             opacity: 0;
             transform: rotate(20deg) scale(0);
         }
         
-        /* ★追加: 葉選手のチャンネルリンク用ボタンスタイル */
-        .partner-links {
-            display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;
-        }
-        .partner-btn {
-            display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #ff4b4b; background: rgba(255, 75, 75, 0.1); transition: all 0.2s; white-space: nowrap;
-        }
-        .partner-btn i { font-size: 1.1rem; color: #ff4b4b; }
+        .partner-links { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .partner-btn { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; text-decoration: none; color: #fff; border: 1px solid #ff4b4b; background: rgba(255, 75, 75, 0.1); transition: all 0.2s; white-space: nowrap; }
+        .partner-btn i { font-size: 1rem; color: #ff4b4b; }
         .partner-btn:hover { background: #ff4b4b; color: #fff; box-shadow: 0 0 10px rgba(255, 75, 75, 0.6); }
 
+        /* =========================================================================
+           ★ スマホ用レスポンシブデザイン (画面幅 768px 以下に適用)
+           ========================================================================= */
+        @media (max-width: 768px) {
+            header { padding: 10px 5px; gap: 8px; }
+            .tab-button { padding: 6px 12px; font-size: 0.75rem; }
+            
+            #description h2 { font-size: 2rem; margin-bottom: 5px; }
+            #description p { font-size: 0.9rem; line-height: 1.5; }
+            
+            #members h2 { font-size: 2rem; margin-bottom: 1rem; }
+            
+            #category-selection { gap: 15px; }
+            .category-image { width: 140px; height: 79px; } /* 16:9比率を維持して縮小 */
+            .category-tab { font-size: 0.8rem; padding: 6px 16px; }
+            
+            .member-tabs { margin-bottom: 10px; }
+            .m-tab { padding: 6px 12px; font-size: 0.75rem; }
+            
+            .member-card { width: 140px; padding: 10px; }
+            .member-icon { width: 60px; height: 60px; font-size: 1.5rem; }
+            .member-name { font-size: 1rem; }
+            .member-role { font-size: 0.7rem; }
+            
+            .member-content-wrapper { height: 65dvh; }
+            
+            #history h2 { font-size: 2rem; }
+            #notes h2 { font-size: 1.8rem; }
+            #history p, #notes div { padding: 15px; font-size: 0.85rem; width: 90%; }
+            
+            .modal-content { padding: 15px; }
+            .modal-header { flex-direction: column; text-align: center; gap: 10px; }
+            .modal-header-info h2 { font-size: 1.4rem; }
+            .amu-stamp { top: 10px; right: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -350,7 +382,6 @@
             let className = isModal ? 'modal-header-icon' : 'member-icon';
             if (!iconData) iconData = "?";
             
-            // ★ローカル画像（images/など）や.jpg/.pngに対応するよう条件を拡張
             if (iconData.startsWith('http') || iconData.startsWith('images/') || iconData.includes('.jpg') || iconData.includes('.png')) {
                 return `<div class="${className}" style="background-image: url('${iconData}'); background-color: transparent;"></div>`;
             } else {
@@ -456,8 +487,7 @@
             scene.add(group);
         });
 
-        // ★シャボン玉の色循環を配列で設定
-        const BUBBLE_COLORS = [0x0055ff, 0xffe600, 0x111111]; // 青、黄、黒
+        const BUBBLE_COLORS = [0x0055ff, 0xffe600, 0x111111]; 
         for (let i = 0; i < 20; i++) { 
             const mat = simpleBubbleMaterial.clone();
             const initialColorIndex = Math.floor(Math.random() * BUBBLE_COLORS.length);
@@ -467,13 +497,12 @@
             const mesh = new THREE.Mesh(geo, mat); 
             mesh.position.set((Math.random() - 0.5) * 35, (Math.random() - 0.5) * 25, (Math.random() * -15) - 5);
             
-            // ★ ホバーエフェクトと色保持のためのデータをuserDataに保存
             mesh.userData = { 
                 lastSplitTime: 0, 
                 isHoverable: true, 
-                colorIndex: initialColorIndex, // 現在の色のインデックス
+                colorIndex: initialColorIndex,
                 isHovered: false,
-                wasHovered: false,             // 前回触れていたかどうか
+                wasHovered: false,
                 targetScale: 1.0
             };
             
@@ -614,7 +643,6 @@
                 }
             }
             
-            // ★ 葉選手の場合に、追加のYouTubeチャンネルリンクを挿入
             if (data.specialLinks && data.specialLinks.length > 0) {
                 let partnerHtml = '<div class="partner-links" style="width: 100%;">';
                 data.specialLinks.forEach(link => {
@@ -761,7 +789,6 @@
             }
         };
 
-        // ★ ホバーエフェクト処理の変更（色は維持され、次に触れると変わる）
         window.addEventListener('mousemove', (e) => {
             const trail = document.createElement('div');
             trail.className = 'cursor-trail'; trail.style.left = e.clientX + 'px'; trail.style.top = e.clientY + 'px';
@@ -783,7 +810,6 @@
             
             const intersects = raycaster.intersectObjects([...clickableObjects, ...decorativeMeshes]);
             
-            // 一旦すべての装飾用シャボン玉のホバー状態をリセット
             decorativeMeshes.forEach(mesh => {
                 if (mesh.userData.isHoverable) {
                     mesh.userData.isHovered = false;
@@ -795,12 +821,10 @@
                 isHoveringSomething = true;
                 const hitObj = intersects[0].object;
                 
-                // もし装飾用のシャボン玉なら
                 if (hitObj.userData.isHoverable) {
                     hitObj.userData.isHovered = true;
-                    hitObj.userData.targetScale = 1.3; // ホバーで少し大きく
+                    hitObj.userData.targetScale = 1.3; 
                     
-                    // ★ 新たに触れた瞬間だけ色を順番に切り替える（離れるまで連続で変わらないようにする）
                     if (!hitObj.userData.wasHovered) {
                         hitObj.userData.colorIndex = (hitObj.userData.colorIndex + 1) % BUBBLE_COLORS.length;
                         hitObj.material.color.setHex(BUBBLE_COLORS[hitObj.userData.colorIndex]);
@@ -809,7 +833,6 @@
                 }
             }
             
-            // 次回の「新たに触れた」判定のために状態を保存
             decorativeMeshes.forEach(mesh => {
                 if (mesh.userData.isHoverable) {
                     mesh.userData.wasHovered = mesh.userData.isHovered;
@@ -818,6 +841,15 @@
             
             renderer.domElement.style.cursor = isHoveringSomething ? 'pointer' : 'default';
         });
+
+        // スマホ画面のタッチイベントもRaycasterに対応させる（オプション）
+        window.addEventListener('touchmove', (e) => {
+            if (!isEntranceDone) return;
+            if(e.touches.length > 0) {
+                mouse.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1; 
+                mouse.y = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+            }
+        }, {passive: true});
 
         window.addEventListener('click', (e) => {
             if (!isEntranceDone) return;
@@ -848,15 +880,11 @@
             floatingBubbles.forEach((bubble) => {
                 if (bubble.mat) {
                     if (bubble.mesh.userData.isHoverable) {
-                        // 色を元に戻す処理は削除（一度変わったらそのまま維持させるため）
-                        
-                        // スケールを滑らかに変化
                         const currentScale = bubble.mesh.scale.x;
                         const tScale = bubble.mesh.userData.targetScale;
                         const newScale = currentScale + (tScale - currentScale) * 0.1;
                         bubble.mesh.scale.set(newScale, newScale, newScale);
                         
-                        // ホバーが外れたら透明度だけ元に戻す（色はそのまま）
                         if (!bubble.mesh.userData.isHovered) {
                             bubble.mat.opacity = visualConfig.bubbleOpacity; 
                         }
